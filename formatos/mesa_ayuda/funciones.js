@@ -1,6 +1,5 @@
 //evento ejecutado en el adicionar
 function add(data){
-	alert("prueba");
    cargarOpcionesClasificacion();
    autoClasificar();
 }
