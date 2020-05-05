@@ -10,7 +10,7 @@
                     <input type="hidden" name="bqTipo_pre_clasificacion" value="select" />
                     
                     <input type="hidden" name="bqTabla_pre_clasificacion" value="campo_seleccionados pre_clasificacion" />
-                    <input type="hidden" name="bqRelacionTabla_pre_clasificacion" value="pre_clasificacion.fk_documento=d.iddocumento AND pre_clasificacion.fk_campos_formato=9198" />
+                    <input type="hidden" name="bqRelacionTabla_pre_clasificacion" value="pre_clasificacion.fk_documento=d.iddocumento AND pre_clasificacion.fk_campos_formato=9427" />
                 </div>
             </div>
         </div>
@@ -39,7 +39,7 @@
                     <input type="hidden" name="bqTipo_anexos" value="adjunto" />
                     
                     <input type="hidden" name="bqTabla_anexos" value="anexos anexos" />
-                    <input type="hidden" name="bqRelacionTabla_anexos" value="anexos.documento_iddocumento=d.iddocumento AND anexos.campos_formato=9192" />
+                    <input type="hidden" name="bqRelacionTabla_anexos" value="anexos.documento_iddocumento=d.iddocumento AND anexos.campos_formato=9423" />
                 </div>
             </div>
         </div>

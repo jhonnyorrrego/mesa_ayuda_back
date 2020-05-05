@@ -20,8 +20,15 @@ function mostrarEnlaceSecundaria($idma_clasificacion,$nombre){
   $enviar = array();
   $enviar["cod_padre"] = $idma_clasificacion;
   
+  $componenteSubClasificacion = DatabaseConnection::getQueryBuilder()
+        ->select('a.idbusqueda_componente')
+        ->from('busqueda_componente','a')
+        ->join('a','busqueda','b','a.busqueda_idbusqueda=b.idbusqueda')
+        ->where("a.nombre = 'clasificacion_secundaria_configuracion'")
+        ->execute()->fetchAll();
+  
   $params=http_build_query([
-  'idbusqueda_componente'=>707,
+  'idbusqueda_componente'=>$componenteSubClasificacion[0]["idbusqueda_componente"],
   'variable_busqueda'=>'{"cod_padre":"'.$idma_clasificacion.'"}'
   ]);
   

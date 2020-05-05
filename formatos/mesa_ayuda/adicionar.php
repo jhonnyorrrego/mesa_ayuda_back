@@ -14,22 +14,17 @@ while ($max_salida > 0) {
 include_once $rootPath . 'app/vendor/autoload.php';
 include_once $rootPath . 'views/assets/librerias.php';
 
-use Saia\controllers\JwtController;
-use Saia\controllers\generador\ComponentFormGeneratorController;
+use Saia\controllers\SessionController;
+use Saia\controllers\generator\component\ComponentBuilder;
 use Saia\controllers\AccionController;
 use Saia\models\formatos\Formato;
 use Saia\MesaAyuda\formatos\mesa_ayuda\FtMesaAyuda;
 
-JwtController::check($_REQUEST["token"], $_REQUEST["key"]); 
+SessionController::goUp($_REQUEST['token'], $_REQUEST['key']);
 
-$Formato = new Formato(20);
-$documentId=$_REQUEST['documentId'] ?? 0;
-$baseUrl=$Formato->isItem() ? ABSOLUTE_SAIA_ROUTE : $rootPath;
-
-$FtMesaAyuda = new FtMesaAyuda;
-
-?>
-<!DOCTYPE html>
+$Formato = new Formato(47);
+$documentId = $_REQUEST['documentId'] ?? 0;
+    $FtMesaAyuda = new FtMesaAyuda;?><!DOCTYPE html>
 <html>
 
 <head>
@@ -39,32 +34,23 @@ $FtMesaAyuda = new FtMesaAyuda;
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=10.0, shrink-to-fit=no" />
     <meta name="apple-mobile-web-app-capable" content="yes">
 
-    <?= jquery() ?><?= bootstrap() ?><?= cssTheme() ?>
-</head>
+            <?= jquery() ?>        <?= bootstrap() ?>        <?= cssTheme() ?>    </head>
 
 <body>
-    <div class='container-fluid container-fixed-lg col-lg-8' style="overflow: auto;height:100vh">
-        <div class='card card-default'>
-            <div class='card-body'>
-                <h5 class='text-black w-100 text-center'>
-                    Mesa de Ayuda
-                </h5>
-                <form 
-                    name='formulario_formatos' 
-                    id='formulario_formatos' 
-                    role='form' 
-                    autocomplete='off' 
-                    >
-                    <input type='hidden' name='idft_mesa_ayuda' value=''>
-<input type='hidden' name='encabezado' value='1'>
+
+                <div class='container-fluid container-fixed-lg col-lg-8' style="overflow: auto;height:100vh">
+                        <div class='card card-default'>
+                <div class='card-body'>
+                    <h5 class='text-black w-100 text-center'>
+                        Mesa ayuda                    </h5>
+                    <form name='formulario_formatos' id='formulario_formatos' role='form' autocomplete='off'>
+                        <input type='hidden' name='encabezado' value='1'>
 <input type='hidden' name='firma' value='1'>
+<input type='hidden' name='idft_mesa_ayuda' value=''>
 
         <?php
-        use Saia\controllers\SessionController;
-        use Saia\core\DatabaseConnection;
-
         $selected = $FtMesaAyuda->dependencia ?? '';
-        $query = DatabaseConnection::getQueryBuilder();
+        $query = Saia\core\DatabaseConnection::getQueryBuilder();
         $roles = $query
             ->select("dependencia as nombre, iddependencia_cargo, cargo")
             ->from("vfuncionario_dc")
@@ -72,7 +58,7 @@ $FtMesaAyuda = new FtMesaAyuda;
             ->andWhere(
                 $query->expr()->lte('fecha_inicial', ':initialDate'),
                 $query->expr()->gte('fecha_final', ':finalDate')
-            )->setParameter(":login", SessionController::getLogin())
+            )->setParameter(":login", Saia\controllers\SessionController::getLogin())
             ->setParameter(':initialDate', new DateTime(), \Doctrine\DBAL\Types\Type::getType('datetime'))
             ->setParameter(':finalDate', new DateTime(), \Doctrine\DBAL\Types\Type::getType('datetime'))
             ->execute()->fetchAll();
@@ -110,7 +96,7 @@ $FtMesaAyuda = new FtMesaAyuda;
             <label title=''>CLASIFICACIóN</label>
             <select class='full-width' name='pre_clasificacion' id='pre_clasificacion' >
             <option value=''>Por favor seleccione...</option>
-        <option value='75' data-key='75'>
+        <option value='114' data-key='1'>
                  
             </option></select>
                 <script>
@@ -131,229 +117,244 @@ $FtMesaAyuda = new FtMesaAyuda;
                 ></textarea>
                 
             </div>
-        <div class='form-group form-group-default ' id='group_anexos'>
-            <label title=''>ANEXOS</label>
-            <div class="" id="dropzone_anexos"></div>
-            <input type="hidden" class="" name="anexos">
-        </div>
-        <script data-baseurl="<?= $rootPath ?>" >
-            $(function(){
-                var baseUrl = $('script[data-baseurl]').data('baseurl');
-                let options = {"tipos":".pdf,.doc,.docx,.jpg,.jpeg,.gif,.png,.bmp,.xls,.xlsx,.ppt","longitud":"3","cantidad":"3"}
-                let loadeddropzone_anexos = [];
-                $("#dropzone_anexos").addClass('dropzone');
-                let dropzone_anexos = new Dropzone('#dropzone_anexos', {
-                    url: baseUrl+'app/temporal/cargar_anexos.php',
-                    dictDefaultMessage: 'Haga clic para elegir un archivo o Arrastre acá el archivo.',
-                    maxFilesize: options.longitud,
-                    maxFiles: options.cantidad,
-                    acceptedFiles: options.tipos,
-                    addRemoveLinks: true,
-                    dictRemoveFile: 'Eliminar',
-                    dictFileTooBig: 'Tamaño máximo {{maxFilesize}} MB',
-                    dictMaxFilesExceeded: `Máximo ${options.cantidad} archivos`,
-                    params: {
-                        token: localStorage.getItem('token'),
-                        key: localStorage.getItem('key'),
-                        dir: 'mesa_ayuda'
-                    },
-                    paramName: 'file',
-                    init : function() {
-                        this.on('success', function(file, response) {
-                            response = JSON.parse(response);
+<div
+        class='form-group form-group-default '
+        id='group_anexos'
+>
+    <label title=''>
+        ANEXOS    </label>
+    <div class="" id="dropzone_anexos"></div>
+    <input
+            type="hidden"
+            class=""
+            name="anexos"
+    >
+</div>
+<script data-baseurl="<?= $rootPath ?>">
+    $(function () {
+        let baseUrl = $('script[data-baseurl]').data('baseurl');
+        let options = {"tipos":".pdf,.doc,.docx,.jpg,.jpeg,.gif,.png,.bmp,.xls,.xlsx,.ppt","longitud":"3","cantidad":"3"};
+        let loadeddropzone_anexos= [];
 
-                            if (response.success) {
-                                response.data.forEach(e => {
-                                    loadeddropzone_anexos.push(e);
-                                });
-                                $("[name='anexos']").val(loadeddropzone_anexos.join(','))
-                            } else {
-                                top.notification({
-                                    type: 'error',
-                                    message: response.message
-                                });
-                            }
+        $("#dropzone_anexos").addClass('dropzone');
+        let dropzone_anexos = new Dropzone("#dropzone_anexos", {
+            url: baseUrl + 'app/temporal/cargar_anexos.php',
+            dictDefaultMessage: 'Haga clic para elegir un archivo o Arrastre acá el archivo.',
+            maxFilesize: options.longitud,
+            maxFiles: options.cantidad,
+            acceptedFiles: options.tipos,
+            addRemoveLinks: true,
+            dictRemoveFile: 'Eliminar',
+            dictFileTooBig: 'Tamaño máximo {{maxFilesize}} MB',
+            dictMaxFilesExceeded: `Máximo ${options.cantidad} archivos`,
+            params: {
+                token: localStorage.getItem('token'),
+                key: localStorage.getItem('key'),
+                dir: ' mesa_ayuda'
+            },
+            paramName: 'file',
+            init: function () {
+                
+                this.on('success', function (file, response) {
+                    response = JSON.parse(response);
+
+                    if (response.success) {
+                        response.data.forEach(e => {
+                            loadeddropzone_anexos.push(e);
                         });
+                        $("[name='anexos']").val(
+                            loadeddropzone_anexos.join(',')
+                        )
+                        // Download link
+                        var anchorEl = document.createElement('a');
+                        anchorEl.setAttribute('href', baseUrl + response.data[0]);
+                        anchorEl.setAttribute('target', '_blank');
+                        anchorEl.innerHTML = "Descargar";
+                        anchorEl.classList.add('dz-remove');
+                        file.previewTemplate.appendChild(anchorEl);
 
-                        this.on('removedfile', function(file) {
-                            if(file.route){ //si elimina un anexo cargado antes
-                                var index = loadeddropzone_anexos.findIndex(route => route == file.route);
-                            }else{//si elimina un anexo recien cargado
-                                var index = loadeddropzone_anexos.findIndex(route => file.status == 'success' && route.indexOf(file.upload.filename) != -1);                                
-                            }
-                           
-                            loadeddropzone_anexos = loadeddropzone_anexos.filter((e,i) => i != index);
-                            $("[name='anexos']").val(loadeddropzone_anexos.join(','));
-                        });
-
-                        this.on('maxfilesexceeded', function() {
-                            $('.dz-error').remove();
-                            top.notification({
-                                type: 'error',
-                                message: 'Ha superado el número máximo de anexos permitidos'
-                            });
+                    } else {
+                        top.notification({
+                            type: 'error',
+                            message: response.message
                         });
                     }
                 });
-            });
-        </script>
-<input type='hidden' name='estado_ticket' value=''>
-<input type='hidden' name='clasificacion' value=''>
-<input type='hidden' name='anterior' value='<?= $_REQUEST['anterior'] ?>'>
-					<input type='hidden' name='campo_descripcion' value='9186'>
-					<input type='hidden' name='documentId' value='<?= $documentId ?>'>
-					<input type='hidden' id='tipo_radicado' name='tipo_radicado' value='mesa_ayuda'>
-					<input type='hidden' name='formatId' value='20'>
-					<input type='hidden' name='tabla' value='ft_mesa_ayuda'>
-					<input type='hidden' name='formato' value='mesa_ayuda'>
-					<div class='form-group px-0 pt-3' id='form_buttons'><button class='btn btn-complete' id='save_document' type='button'>Continuar</button><div class='progress-circle-indeterminate d-none' id='spiner'></div></div>
-                </form>
-            </div>
-        </div>
-    </div>
 
-    <?= jsTheme() ?>
-    <?= icons() ?>
-    <?= moment() ?>
-    <?= select2() ?>
-    <?= validate() ?>
-    <?= ckeditor() ?>
-    <?= jqueryUi() ?>
-    <?= fancyTree(true) ?>
-    <?= dateTimePicker() ?>
-    <?= dropzone() ?>
-   
-    <?php
- 
-        if($documentId){
-            $additionalParameters=$FtMesaAyuda->getRouteParams(FtMesaAyuda::SCOPE_ROUTE_PARAMS_EDIT); 
-        }else{
-            $additionalParameters=$FtMesaAyuda->getRouteParams(FtMesaAyuda::SCOPE_ROUTE_PARAMS_ADD); 
-        }
-        $params=array_merge($_REQUEST,$additionalParameters,['baseUrl'=> $baseUrl]);
-    ?>
-    <script>
-        $(function() {
-            $.getScript('<?= $baseUrl ?>app/modules/back_mesa_ayuda/formatos/mesa_ayuda/funciones.js', () => {
-                window.routeParams=<?= json_encode($params) ?>;
-                if (+'<?= $documentId ?>') {
-                    edit(<?= json_encode($params) ?>)
-                } else {
-                    add(<?= json_encode($params) ?>)
-                }
-            });
-
-            $("#add_item").click(function() {
-                checkForm((data) => {
-                    let options = top.window.modalOptions;
-                    options.oldSource = null;
-                    top.topModal(options)
-                })
-            });
-
-            $("#save_item").click(function() {
-                checkForm((data) => {                    
-                    top.successModalEvent(data);
-                })
-            });
-
-            $("#save_document").click(function() {
-                checkForm((data) => {
-                    let route = "<?= $baseUrl ?>views/documento/index_acordeon.php?";
-                    route += $.param(data);
-                    window.location.href = route;
-                })
-            });
-
-            function checkForm(callback){
-                $("#formulario_formatos").validate({
-                    ignore: [],
-                    errorPlacement: function (error, element) {
-                        let node = element[0];
-
-                        if (
-                            node.tagName == 'SELECT' &&
-                            node.className.indexOf('select2') !== false
-                        ) {
-                            error.addClass('pl-3');
-                            element.next().append(error);
-                        } else {
-                            error.insertAfter(element);
-                        }
-                    },
-                    submitHandler: function(form) {                       
-                        $("#form_buttons").find('button,#spiner').toggleClass('d-none');
-                        
-                        executeEvents(callback);
-                    },
-                    invalidHandler: function() {
-                        $("#save_document").show();
-                        $("#boton_enviando").remove();
+                this.on('removedfile', function (file) {
+                    if (file.route) { //si elimina un anexo cargado antes
+                        var index = loadeddropzone_anexos.findIndex(route => route == file.route);
+                    } else {//si elimina un anexo recien cargado
+                        var index = loadeddropzone_anexos.findIndex(route => file.status == 'success' && route.indexOf(file.upload.filename) != -1);
                     }
-                });
-                $("#formulario_formatos").trigger('submit');
-            }
 
-            function executeEvents(callback){
-                let documentId = $("[name='documentId']").val();
-
-                (+documentId ? beforeSendEdit() : beforeSendAdd())
-                    .then(r => {
-                        sendData()
-                            .then(requestResponse => {
-                                (+documentId ? afterSendEdit(requestResponse) : afterSendAdd(requestResponse))
-                                    .then(r => {
-                                        callback(requestResponse.data);
-                                    })
-                                    .catch(message => {
-                                        fail(message);
-                                    })
-                            }).catch(message => {
-                                fail(message);
-                            });
-                    }).catch(message => {
-                       fail(message);
-                    });
-            }
-
-            function sendData(){
-                return new Promise((resolve, reject) => {
-                    let data = $('#formulario_formatos').serialize() + '&' +
-                    $.param({
-                        key: localStorage.getItem('key'),
-                        token: localStorage.getItem('token')
-                    });
-    
-                    $.post(
-                        '<?= $baseUrl ?>app/documento/guardar_ft.php',
-                        data,
-                        function(response) {
-                            if (response.success) {
-                                resolve(response)
-                            } else {
-                                reject(response.message);
-                            }
-                        },
-                        'json'
+                    loadeddropzone_anexos = loadeddropzone_anexos.filter((e, i) => i != index);
+                    $("[name='anexos']").val(
+                        loadeddropzone_anexos.join(',')
                     );
-                });
-            }
+                                    });
 
-            function fail(message){
-                $("#form_buttons").find('button,#spiner').toggleClass('d-none');
-                top.notification({
-                    message: message,
-                    type: 'error',
-                    title: 'Error!'
+                this.on('maxfilesexceeded', function () {
+                    $('.dz-error').remove();
+                    top.notification({
+                        type: 'error',
+                        message: 'Ha superado el número máximo de anexos permitidos'
+                    });
                 });
             }
         });
-    </script>
-    <?= AccionController::execute(
+    });
+</script>
+<input type='hidden' name='estado_ticket' value=''>
+<input type='hidden' name='clasificacion' value=''>
+<input type='hidden' name='anterior' value='<?= $_REQUEST['anterior'] ?>'>
+					<input type='hidden' name='campo_descripcion' value='9425'>
+					<input type='hidden' name='documentId' value='<?= $documentId ?>'>
+					<input type='hidden' id='tipo_radicado' name='tipo_radicado' value='mesa_ayuda'>
+					<input type='hidden' name='formatId' value='47'>
+					<input type='hidden' name='tabla' value='ft_mesa_ayuda'>
+					<input type='hidden' name='formato' value='mesa_ayuda'>
+					<div class='form-group px-0 pt-3' id='form_buttons'><button class='btn btn-complete' id='save_document' type='button'>Continuar</button><div class='progress-circle-indeterminate d-none' id='spiner'></div></div>                    </form>
+                </div>
+            </div>
+            </div>
+
+            <?= jsTheme() ?>            <?= icons() ?>            <?= moment() ?>            <?= select2() ?>            <?= validate() ?>            <?= ckeditor() ?>            <?= jqueryUi() ?>            <?= fancyTree(true) ?>            <?= dateTimePicker() ?>            <?= dropzone() ?>
+                <?php
+        if ($documentId) {
+            $additionalParameters = $FtMesaAyuda->getRouteParams(FtMesaAyuda::SCOPE_ROUTE_PARAMS_EDIT);
+        } else {
+            $additionalParameters = $FtMesaAyuda->getRouteParams(FtMesaAyuda::SCOPE_ROUTE_PARAMS_ADD);
+        }
+        $params = json_encode(array_merge(
+            $_REQUEST,
+            $additionalParameters,
+            ['baseUrl' => ABSOLUTE_SAIA_ROUTE]
+        ));
+    ?>            <script>
+                $(function() {
+                    let baseUrl = 'https://modulos.netsaia.com/saia_ma/saia_2019/';
+                    let file = 'app/modules/back_mesa_ayuda/formatos/mesa_ayuda/funciones.js';
+                    $.getScript(baseUrl + file, () => {
+                        window.routeParams = <?= $params ?>;
+                        if (+'<?= $documentId ?>') {
+                            edit(<?= $params ?>)
+                        } else {
+                            add(<?= $params ?>)
+                        }
+                    });
+
+                    $("#add_item").click(function() {
+                        checkForm((data) => {
+                            let options = top.window.modalOptions;
+                            options.oldSource = null;
+                            top.topModal(options)
+                        })
+                    });
+
+                    $("#save_item").click(function() {
+                        checkForm((data) => {
+                            top.successModalEvent(data);
+                        })
+                    });
+
+                    $("#save_document").click(function() {
+                        checkForm((data) => {
+                            let route = baseUrl + "views/documento/index_acordeon.php?";
+                            route += $.param(data);
+                            window.location.href = route;
+                        })
+                    });
+
+                    function checkForm(callback) {
+                        $("#formulario_formatos").validate({
+                            ignore: [],
+                            errorPlacement: function(error, element) {
+                                let node = element[0];
+
+                                if (
+                                    node.tagName == 'SELECT' &&
+                                    node.className.indexOf('select2') !== false
+                                ) {
+                                    error.addClass('pl-3');
+                                    element.next().append(error);
+                                } else {
+                                    error.insertAfter(element);
+                                }
+                            },
+                            submitHandler: function(form) {
+                                $("#form_buttons").find('button,#spiner').toggleClass('d-none');
+
+                                executeEvents(callback);
+                            },
+                            invalidHandler: function() {
+                                $("#save_document").show();
+                                $("#boton_enviando").remove();
+                            }
+                        });
+                        $("#formulario_formatos").trigger('submit');
+                    }
+
+                    function executeEvents(callback) {
+                        let documentId = $("[name='documentId']").val();
+
+                        (+documentId ? beforeSendEdit() : beforeSendAdd())
+                        .then(r => {
+                            sendData()
+                                .then(requestResponse => {
+                                    (+documentId ? afterSendEdit(requestResponse) : afterSendAdd(requestResponse))
+                                    .then(r => {
+                                            callback(requestResponse.data);
+                                        })
+                                        .catch(message => {
+                                            fail(message);
+                                        })
+                                }).catch(message => {
+                                    fail(message);
+                                });
+                        }).catch(message => {
+                            fail(message);
+                        });
+                    }
+
+                    function sendData() {
+                        return new Promise((resolve, reject) => {
+                            let data = $('#formulario_formatos').serialize() + '&' +
+                                $.param({
+                                    key: localStorage.getItem('key'),
+                                    token: localStorage.getItem('token')
+                                });
+
+                            $.post(baseUrl + 'app/documento/guardar_ft.php',
+                                data,
+                                function(response) {
+                                    if (response.success) {
+                                        resolve(response)
+                                    } else {
+                                        reject(response.message);
+                                    }
+                                },
+                                'json'
+                            );
+                        });
+                    }
+
+                    function fail(message) {
+                        $("#form_buttons").find('button,#spiner').toggleClass('d-none');
+                        top.notification({
+                            message: message,
+                            type: 'error',
+                            title: 'Error!'
+                        });
+                    }
+                });
+            </script>
+                <?php AccionController::execute(
         AccionController::ACTION_ADD,
         AccionController::BEFORE_MOMENT,
         $FtMesaAyuda ?? null,
         $Formato
     ) ?>
 </body>
+
 </html>

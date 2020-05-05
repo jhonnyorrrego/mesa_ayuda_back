@@ -184,7 +184,8 @@ final class Version20200426235150 extends AbstractMigration
             'responsables_json' => NULL
         ];
         
-        $idOtro = $this->connection->insert('ma_clasificacion', $data);
+        $this->connection->insert('ma_clasificacion', $data);
+        $idOtro = $this->connection->lastInsertId();
         
         $data = [
             'idma_clasificacion' => '16',
