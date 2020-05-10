@@ -20,60 +20,69 @@ class FtMesaAyudaTarea implements IExternalEventsTask
       $this->Instance = $Instance;
   }  
   
-  public function afterCreateTarea(): void
+  public function afterCreateTarea(): bool
   {
-    
+    return true;
   }
-  public function afterUpdateTarea(): void
+  public function afterUpdateTarea(): bool
   {
     if (!$this->Tarea->estado) {
         if ($DocumentoTarea = $this->Tarea->getDocument()) {
             $this->actualizarEstadoTareaTicket($DocumentoTarea->Documento);
         }
     }
+    
+    return true;
   }
-  public function afterDeleteTarea(): void
+  public function afterDeleteTarea(): bool
   {
     if ($DocumentoTarea = $this->Tarea->getDocument()) {
         $this->actualizarEstadoTareaTicket($DocumentoTarea->Documento);
     }
-  }
-  public function afterCreateTareaAnexo(): void
-  {
     
+    return true;
   }
-  public function afterCreateTareaComentario(): void
+  public function afterCreateTareaAnexo(): bool
   {
+    return true;
   }
-  public function afterCreateTareaEstado(): void
+  public function afterCreateTareaComentario(): bool
+  {
+    return true;
+  }
+  public function afterCreateTareaEstado(): bool
   {    
     if ($DocumentoTarea = $this -> Tarea -> getDocument()) {
         $this -> actualizarEstadoTareaTicket($DocumentoTarea->Documento);
     }
-  }
-  public function afterCreateTareaEtiqueta(): void
-  {
     
+    return true;
   }
-  public function afterCreateTareaFuncionario(): void
+  public function afterCreateTareaEtiqueta(): bool
   {
-    
+    return true;
   }
-  public function afterUpdateTareaFuncionario(): void
+  public function afterCreateTareaFuncionario(): bool
   {
-    
+    return true;
   }
-  public function afterCreateTareaNotificacion(): void
+  public function afterUpdateTareaFuncionario(): bool
   {
-    
+    return true;
   }
-  public function afterCreateTareaPrioridad(): void
+  public function afterCreateTareaNotificacion(): bool
   {
-    
+    return true;
   }
-  public function afterCreateDocumentoTarea(): void
+  public function afterCreateTareaPrioridad(): bool
+  {
+    return true;
+  }
+  public function afterCreateDocumentoTarea(): bool
   {
     $this->actualizarEstadoTareaTicket($this->Instance->Documento, FtMesaAyuda::ESTADO_PROCESO);
+    
+    return true;
   }
   
   public function actualizarEstadoTareaTicket(Documento $Documento, ?string $estado = null)
@@ -92,5 +101,7 @@ class FtMesaAyudaTarea implements IExternalEventsTask
           $Ft -> estado_ticket = $estado;
           $Ft->update();
       }
+      
+      return true;
   }
 }

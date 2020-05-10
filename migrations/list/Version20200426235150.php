@@ -14,7 +14,7 @@ final class Version20200426235150 extends AbstractMigration
 {
     public function getDescription() : string
     {
-        return '';
+        return 'Llenado de informacion en la tabla de configuracio';
     }
 
     public function up(Schema $schema) : void

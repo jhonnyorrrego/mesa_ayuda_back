@@ -39,6 +39,23 @@ function mostrarEnlaceSecundaria($idma_clasificacion,$nombre){
   return($cadenaRetorno);
 }
 
+function mostrarResponsableClasificacion($responsablesJson){
+  $cadena = '';
+  
+  if($responsablesJson != 'responsables_json'){
+    $responsablesArray = json_decode($responsablesJson,true);
+    $datosResponsables = array();
+    
+    foreach($responsablesArray as $id => $valor){            
+      $datosResponsables[] = $valor['nombre'];
+    }
+
+    $cadena = implode("<br />", $datosResponsables);
+  }
+  
+  return($cadena);
+}
+
 function filtroPadreSecundario(){
   $cadenaWhere = '';  
   if(@$_REQUEST["cod_padre"]){    

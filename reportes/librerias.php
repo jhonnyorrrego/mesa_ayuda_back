@@ -5,6 +5,7 @@ use Saia\core\DatabaseConnection;
 use Saia\MesaAyuda\controllers\MesaAyudaController;
 use Saia\MesaAyuda\formatos\mesa_ayuda\FtMesaAyuda;
 use Saia\controllers\SessionController;
+use Saia\models\vistas\VfuncionarioDc;
 
 $max_salida = 6;
 $rootPath = $ruta = "";
@@ -39,14 +40,8 @@ function mostrarPreClasificacionTicket($preclasificacion){
 function mostrarUsuarioTicket($dependencia){
   $cadenaRetorno = '';
   
-  $usuarioCreador = DatabaseConnection::getQueryBuilder()
-        ->select('nombres', 'apellidos')
-        ->from('vfuncionario_dc')
-        ->where('iddependencia_cargo = :rol')
-        ->setParameter(':rol', $dependencia, \Doctrine\DBAL\Types\Type::INTEGER)
-        ->execute()->fetchAll();
-        
-  $cadenaRetorno = ucwords(strtolower($usuarioCreador[0]["nombres"] . " " . $usuarioCreador[0]["apellidos"]));
+  $Usuario = VfuncionarioDc::findByRole($dependencia);
+  $cadenaRetorno = $Usuario -> getName();
   
   return($cadenaRetorno);
 }
