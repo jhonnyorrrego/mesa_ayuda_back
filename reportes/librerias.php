@@ -6,6 +6,7 @@ use Saia\MesaAyuda\controllers\MesaAyudaController;
 use Saia\MesaAyuda\formatos\mesa_ayuda\FtMesaAyuda;
 use Saia\controllers\SessionController;
 use Saia\models\vistas\VfuncionarioDc;
+use Saia\controllers\DateController;
 
 $max_salida = 6;
 $rootPath = $ruta = "";
@@ -169,6 +170,44 @@ function contadorTareaTicket($iddocumento){
     ->execute()->fetchAll();
   
   $cadenaRetorno = $totalFinalizados[0]["cantidad"] . "/" . $totalTareas[0]['cantidad'];
+  
+  return($cadenaRetorno);
+}
+
+function vencimientoTicket($fecha,$tipo_dias,$cant_dias,$estado_ticket){
+  $cadenaRetorno = '';
+  $fechaFinal = ''; //fecha final calculada
+  $hoy = new DateTime(date('Y-m-d'));
+  if($cant_dias == 'cant_dias' || $cant_dias == ''){
+    $cant_dias = 5;
+  }
+  
+  if($tipo_dias == 1 || $tipo_dias == 'tipo_dias'){//sumo dias corridos a la fecha de creacion
+    $fechaObject = new DateTime($fecha);
+    $fechaObject->add(new DateInterval("P{$cant_dias}D"));
+    $fechaFinal = $fechaObject->format('Y-m-d');
+    $fechaFinalObject = new DateTime($fechaFinal);
+  } else if($tipo_dias == 2){//sumo dias habiles a la fecha de creacion
+    $fechaFinal = DateController::diasHabiles($fecha,$cant_dias,'Y-m-d');
+    $fechaFinalObject = new DateTime($fechaFinal);
+  }
+  
+  $interval = $hoy->diff($fechaFinalObject);//Resultado de dias al restar la fecha de hoy con la fecha final del ticket (Objeto)
+  $diasResta = $interval->format('%a');//Obtengo la cantidad de dias
+  
+  if($estado_ticket == FtMesaAyuda::ESTADO_TERMINADO){//Si el ticket esta terminado
+    $color = 'label label-success';//verde
+  } else {
+    if($diasResta > 3){//Si los dias son mayor a 4
+      $color = 'label label-secondary';//Gris
+    } else if($diasResta <= 3 && $diasResta >= 1){//Si los dias son 
+      $color = 'label label-warning';//Amarillo
+    } else if($diasResta < 1){
+      $color = 'label label-danger';//Rojo
+    }
+  }
+  
+  $cadenaRetorno = "<span class='{$color}'>{$fechaFinal}</span>";
   
   return($cadenaRetorno);
 }
