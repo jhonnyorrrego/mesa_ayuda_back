@@ -188,12 +188,16 @@ function vencimientoTicket($fecha,$tipo_dias,$cant_dias,$estado_ticket){
     $fechaFinal = $fechaObject->format('Y-m-d');
     $fechaFinalObject = new DateTime($fechaFinal);
   } else if($tipo_dias == 2){//sumo dias habiles a la fecha de creacion
-    $fechaFinal = DateController::diasHabiles($fecha,$cant_dias,'Y-m-d');
-    $fechaFinalObject = new DateTime($fechaFinal);
+    $fechaObject = new DateTime($fecha);
+    $fechaFinalObject = DateController::addBusinessDays($fechaObject,$cant_dias);
+    $fechaFinal = $fechaFinalObject->format('Y-m-d');
+    //$fechaFinalObject = new DateTime($fechaFinal);
   }
   
   $interval = $hoy->diff($fechaFinalObject);//Resultado de dias al restar la fecha de hoy con la fecha final del ticket (Objeto)
   $diasResta = $interval->format('%a');//Obtengo la cantidad de dias
+  
+  
   
   if($estado_ticket == FtMesaAyuda::ESTADO_TERMINADO){//Si el ticket esta terminado
     $color = 'label label-success';//verde
