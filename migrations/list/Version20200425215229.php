@@ -16,7 +16,7 @@ final class Version20200425215229 extends AbstractMigration
     use TMigrations;
     
     public $nombreFormato = 'mesa_ayuda';
-    public $etiquetaFormato = 'Mesa ayuda';
+    public $etiquetaFormato = 'Mesa de ayuda';
     public $idFormato;
     
     public function getDescription() : string
@@ -100,7 +100,7 @@ final class Version20200425215229 extends AbstractMigration
             'nombre' => "reporte_tickets_pendientes",
             'tipo' => '2',
             'imagen' => 'fa fa-bar-chart-o',
-            'etiqueta' => 'Tickets sin clasificar',
+            'etiqueta' => 'Tickets pendientes',
             'enlace' => 'views/dashboard/kaiten_dashboard.php?panels=[{"kConnector": "iframe","url": "views/buzones/grilla.php?idbusqueda_componente=' . $componente[0]["idbusqueda_componente"] . '","kTitle":"' . $componente[0]["etiqueta"] . '"}]',
             'cod_padre' => $idReporteTickets,
             'orden' => 1,
@@ -111,7 +111,7 @@ final class Version20200425215229 extends AbstractMigration
         //Fin reporte_tickets_pendientes -----------------------
         
         //Creando modulo reporte_tickets_clasificados -----------------
-        $sql = "SELECT idbusqueda_componente,etiqueta FROM busqueda_componente WHERE nombre='tickets_clasificados' order by idbusqueda_componente desc";
+        /*$sql = "SELECT idbusqueda_componente,etiqueta FROM busqueda_componente WHERE nombre='tickets_clasificados' order by idbusqueda_componente desc";
         $componente = $this->connection->executeQuery($sql)->fetchAll();
 
         if (!$componente[0]['idbusqueda_componente']) {
@@ -130,7 +130,7 @@ final class Version20200425215229 extends AbstractMigration
             'color' => ''
         ];
         
-        $id = $this->createModulo($data, "reporte_tickets_clasificados");
+        $id = $this->createModulo($data, "reporte_tickets_clasificados");*/
         //Fin reporte_tickets_clasificados -----------------------
         
         //Creando modulo reporte_tickets_tarea -----------------
@@ -157,7 +157,7 @@ final class Version20200425215229 extends AbstractMigration
         //Fin reporte_tickets_tarea -----------------------
         
         //Creando modulo reporte_tickets_proceso -----------------
-        $sql = "SELECT idbusqueda_componente,etiqueta FROM busqueda_componente WHERE nombre='tickets_tarea_proceso' order by idbusqueda_componente desc";
+        /*$sql = "SELECT idbusqueda_componente,etiqueta FROM busqueda_componente WHERE nombre='tickets_tarea_proceso' order by idbusqueda_componente desc";
         $componente = $this->connection->executeQuery($sql)->fetchAll();
 
         if (!$componente[0]['idbusqueda_componente']) {
@@ -176,11 +176,11 @@ final class Version20200425215229 extends AbstractMigration
             'color' => ''
         ];
         
-        $id = $this->createModulo($data, "reporte_tickets_proceso");
+        $id = $this->createModulo($data, "reporte_tickets_proceso");*/
         //Fin reporte_tickets_proceso -----------------------
         
         //Creando modulo reporte_tickets_terminado -----------------
-        $sql = "SELECT idbusqueda_componente,etiqueta FROM busqueda_componente WHERE nombre='tickets_tarea_terminada' order by idbusqueda_componente desc";
+        /*$sql = "SELECT idbusqueda_componente,etiqueta FROM busqueda_componente WHERE nombre='tickets_tarea_terminada' order by idbusqueda_componente desc";
         $componente = $this->connection->executeQuery($sql)->fetchAll();
 
         if (!$componente[0]['idbusqueda_componente']) {
@@ -199,7 +199,7 @@ final class Version20200425215229 extends AbstractMigration
             'color' => ''
         ];
         
-        $id = $this->createModulo($data, "reporte_tickets_terminado");
+        $id = $this->createModulo($data, "reporte_tickets_terminado");*/
         //Fin reporte_tickets_terminado -----------------------
         
         
@@ -243,15 +243,6 @@ final class Version20200425215229 extends AbstractMigration
     {
         $name = $this -> nombreFormato;
         
-        $this->connection->insert('contador', [
-            'nombre' => $this -> nombreFormato,
-            'consecutivo' => '1',
-            'reiniciar_cambio_anio' => '0',
-            'etiqueta_contador' => $this -> etiquetaFormato,
-            'post' => NULL,
-            'estado' => '1'
-        ]);
-        
         $idContador = $this->connection->lastInsertId();
 
         $sql = "SELECT idfuncionario FROM funcionario WHERE login='cerok'";
@@ -259,6 +250,20 @@ final class Version20200425215229 extends AbstractMigration
 
         if (!$funcionario[0]['idfuncionario']) {
             $this->abortIf(true, "El funcionario cerok NO existe");
+        }
+        
+        $sql = "SELECT idcontador FROM contador WHERE nombre='{$name}'";
+        $busquedaContador = $this->connection->executeQuery($sql)->fetchAll();
+        
+        if (!$busquedaContador[0]['idcontador']) {
+            $this->connection->insert('contador', [
+                'nombre' => $this -> nombreFormato,
+                'consecutivo' => '1',
+                'reiniciar_cambio_anio' => '0',
+                'etiqueta_contador' => $this -> etiquetaFormato,
+                'post' => NULL,
+                'estado' => '1'
+            ]);
         }
         
         $sql = "SELECT idcategoria_formato FROM categoria_formato WHERE nombre like 'Tr%mites generales'";
@@ -301,8 +306,8 @@ final class Version20200425215229 extends AbstractMigration
       <td style="width:70%">&nbsp;{*anexos*}</td>
     </tr>
     <tr>
-      <td style="width:30%"><strong>&nbsp;Clasificaci&oacute;n por usuario</strong></td>
-      <td style="width:70%">&nbsp;{*pre_clasificacion*}</td>
+      <td style="width:30%"><strong>&nbsp;Clasificaci&oacute;n</strong></td>
+      <td style="width:70%">&nbsp;{*getClasificacion*}</td>
     </tr>
     <tr>
       <td style="width:30%"><strong>&nbsp;Estado</strong></td>
@@ -315,7 +320,7 @@ final class Version20200425215229 extends AbstractMigration
             'margenes' => '25,25,25,25',
             'orientacion' => 0,
             'papel' => 'Letter',
-            'exportar' => 'mpdf',
+            //'exportar' => 'mpdf',
             'funcionario_idfuncionario' => $funcionario[0]['idfuncionario'],
             'detalle' => 0,
             'tipo_edicion' => 0,
@@ -323,9 +328,9 @@ final class Version20200425215229 extends AbstractMigration
             'font_size' => 14,
             'mostrar_pdf' => 0,
             'orden' => NULL,
-            'firma_digital' => 0,
+            //'firma_digital' => 0,
             'fk_categoria_formato' => $categoriaFormato[0]['idcategoria_formato'],
-            'funcion_predeterminada' => 0,
+            //'funcion_predeterminada' => 0,
             'paginar' => 0,
             'pertenece_nucleo' => 0,
             'descripcion_formato' => 'Formulario para registrar requerimiento',
@@ -365,26 +370,6 @@ final class Version20200425215229 extends AbstractMigration
                 'opciones' => '{"tipos":".pdf,.doc,.docx,.jpg,.jpeg,.gif,.png,.bmp,.xls,.xlsx,.ppt","longitud":"3","cantidad":"3"}',
                 'listable' => 1
             ],
-            'clasificacion' => [
-                'formato_idformato' => $idFormato,
-                'nombre' => 'clasificacion',
-                'etiqueta' => 'Clasificacion',
-                'tipo_dato' => 'string',
-                'longitud' => 255,
-                'obligatoriedad' => '0',
-                'valor' => '',
-                'acciones' => 'a,e,b',
-                'ayuda' => NULL,
-                'predeterminado' => NULL,
-                'banderas' => '',
-                'etiqueta_html' => 'Hidden',
-                'orden' => 6,
-                'fila_visible' => 1,
-                'placeholder' => 'Campo hidden',
-                'longitud_vis' => NULL,
-                'opciones' => '',
-                'listable' => 1
-            ],
             'descripcion' => [
                 'formato_idformato' => $idFormato,
                 'nombre' => 'descripcion',
@@ -415,10 +400,30 @@ final class Version20200425215229 extends AbstractMigration
                 'valor' => '',
                 'acciones' => 'a,e,b',
                 'ayuda' => NULL,
-                'predeterminado' => NULL,
+                'predeterminado' => 1,
                 'banderas' => '',
                 'etiqueta_html' => 'Hidden',
                 'orden' => 5,
+                'fila_visible' => 1,
+                'placeholder' => 'Campo hidden',
+                'longitud_vis' => NULL,
+                'opciones' => '',
+                'listable' => 1
+            ],
+      'clasificacion' => [
+                'formato_idformato' => $idFormato,
+                'nombre' => 'clasificacion',
+                'etiqueta' => 'Clasificacion',
+                'tipo_dato' => 'string',
+                'longitud' => 255,
+                'obligatoriedad' => '0',
+                'valor' => '',
+                'acciones' => 'a,e,b',
+                'ayuda' => NULL,
+                'predeterminado' => NULL,
+                'banderas' => '',
+                'etiqueta_html' => 'Hidden',
+                'orden' => 6,
                 'fila_visible' => 1,
                 'placeholder' => 'Campo hidden',
                 'longitud_vis' => NULL,
@@ -491,14 +496,14 @@ final class Version20200425215229 extends AbstractMigration
             $idCampoFormato = $this->connection->insert('campos_formato', $field);
             
             if($field["nombre"] == 'pre_clasificacion' && $idCampoFormato){
-              $idCampoPreClasificacion = $this->connection->lastInsertId();
+              $idCampoClasificacion = $this->connection->lastInsertId();
             }
         }
         
         $data = [
             'llave' => "1",
             'valor' => ' ',
-            'fk_campos_formato' => $idCampoPreClasificacion,
+            'fk_campos_formato' => $idCampoClasificacion,
             'estado' => '1'
         ];
         
@@ -523,7 +528,7 @@ final class Version20200425215229 extends AbstractMigration
         ];
         $idbusqueda = $this->createBusqueda($busqueda, 'tickets');
         
-        //Creando el componente tickets_pendientes--------------------------------------
+        //Creando el componente tickets_pendientes------------------------------------
         $nombreComponente = 'tickets_pendientes';
         $busquedaComponente = [
             'busqueda_idbusqueda' => $idbusqueda,
@@ -531,9 +536,45 @@ final class Version20200425215229 extends AbstractMigration
             'nombre' => $nombreComponente,
             'orden' => 1,
             'url' => NULL,
-            'info' => '[{"title":"Ticket","field":"{*verDocumentoTicket@iddocumento,numero*}","align":"center"},{"title":"Fecha","field":"{*fecha*}","align":"center"},{"title":"Solicitante","field":"{*mostrarUsuarioTicket@dependencia*}","align":"center"},{"title":"Descripcion","field":"{*descripcion*}","align":"left"},{"title":"Clasificacion","field":"{*mostrarPreClasificacionTicket@pre_clasificacion*}","align":"center"},{"title":"Clasificar","field":"{*listarClasificacionesTicket@id,iddocumento*}","align":"center"}]',
+            'info' => '[{"title":"Ticket","field":"{*verDocumentoTicket@iddocumento,numero*}","align":"center"},{"title":"Fecha","field":"{*fecha*}","align":"center"},{"title":"Solicitante","field":"{*mostrarUsuarioTicket@dependencia*}","align":"center"},{"title":"Descripcion","field":"{*descripcion*}","align":"left"},{"title":"Clasificaci&oacute;n","field":"{*mostrarClasificacionTicket@id*}","align":"center"},{"title":"Vencimiento","field":"{*vencimientoTicket@fecha,tipo_dias,cant_dias,estado_ticket*}","align":"center"},{"title":"Cantidad tareas","field":"{*contadorTareaTicket@iddocumento*}","align":"center"},{"title":"Acciones","field":"{*accionesTicket@iddocumento*}","align":"center"}]',
             'encabezado_componente' => NULL,
-            'campos_adicionales' => 'b.descripcion,b.idft_mesa_ayuda as id,b.pre_clasificacion,b.dependencia',
+            'campos_adicionales' => 'b.descripcion,b.idft_mesa_ayuda as id,b.clasificacion,b.dependencia,c.tipo_dias,c.cant_dias,b.estado_ticket',
+            'tablas_adicionales' => 'ft_mesa_ayuda b join ma_clasificacion c on b.clasificacion=c.idma_clasificacion join ma_clasificacion d on c.cod_padre=d.idma_clasificacion',
+            'ordenado_por' => 'a.fecha',
+            'direccion' => 'desc',
+            'agrupado_por' => NULL,
+            'busqueda_avanzada' => NULL,
+            'enlace_adicionar' => NULL,
+            'llave' => 'a.iddocumento'
+        ];
+        $idbusquedaComponente = $this->createBusquedaComponente($idbusqueda, $busquedaComponente, $nombreComponente);
+        
+        $this->connection->update('busqueda_componente', [
+            'url' => 'views/buzones/grilla.php?idbusqueda_componente=' . $idbusquedaComponente
+        ], [
+            'idbusqueda_componente' => $idbusquedaComponente
+        ]);
+        
+        //Se crea la condicion para el componente tickets pendientes
+        $busquedaCondicion = [
+            'fk_busqueda_componente' => $idbusquedaComponente,
+            'codigo_where' => "a.iddocumento=b.documento_iddocumento and b.estado_ticket=1 {*filtrarResponsableTicket*}",
+            'etiqueta_condicion' => $nombreComponente
+        ];
+        $this->createBusquedaCondicion($idbusquedaComponente, $busquedaCondicion, $nombreComponente);
+        //Fin tickets_pendientes-----------------------------------------------------
+        
+        //Creando el componente tickets_pendientes--------------------------------------
+        /*$nombreComponente = 'tickets_pendientes';
+        $busquedaComponente = [
+            'busqueda_idbusqueda' => $idbusqueda,
+            'etiqueta' => 'Tickets pendientes',
+            'nombre' => $nombreComponente,
+            'orden' => 1,
+            'url' => NULL,
+            'info' => '[{"title":"Ticket","field":"{*verDocumentoTicket@iddocumento,numero*}","align":"center"},{"title":"Fecha","field":"{*fecha*}","align":"center"},{"title":"Solicitante","field":"{*mostrarUsuarioTicket@dependencia*}","align":"center"},{"title":"Descripcion","field":"{*descripcion*}","align":"left"},{"title":"Clasificacion","field":"{*mostrarClasificacionTicket@clasificacion*}","align":"center"},{"title":"Clasificar","field":"{*listarClasificacionesTicket@id,iddocumento*}","align":"center"}]',
+            'encabezado_componente' => NULL,
+            'campos_adicionales' => 'b.descripcion,b.idft_mesa_ayuda as id,b.clasificacion,b.dependencia',
             'tablas_adicionales' => 'ft_mesa_ayuda b',
             'ordenado_por' => 'a.fecha',
             'direccion' => 'desc',
@@ -556,11 +597,11 @@ final class Version20200425215229 extends AbstractMigration
             'codigo_where' => "a.iddocumento=b.documento_iddocumento and (b.estado_ticket is null or b.estado_ticket='' or b.estado_ticket=1)",
             'etiqueta_condicion' => $nombreComponente
         ];
-        $this->createBusquedaCondicion($idbusquedaComponente, $busquedaCondicion, $nombreComponente);
+        $this->createBusquedaCondicion($idbusquedaComponente, $busquedaCondicion, $nombreComponente);*/
         //Fin tickets_pendientes--------------------------------------------------------
         
         //Creando el componente tickets_clasificados------------------------------------
-        $nombreComponente = 'tickets_clasificados';
+        /*$nombreComponente = 'tickets_clasificados';
         $busquedaComponente = [
             'busqueda_idbusqueda' => $idbusqueda,
             'etiqueta' => 'Tickets clasificados',
@@ -592,7 +633,7 @@ final class Version20200425215229 extends AbstractMigration
             'codigo_where' => "a.iddocumento=b.documento_iddocumento and b.estado_ticket=2 {*filtrarResponsableTicket*}",
             'etiqueta_condicion' => $nombreComponente
         ];
-        $this->createBusquedaCondicion($idbusquedaComponente, $busquedaCondicion, $nombreComponente);
+        $this->createBusquedaCondicion($idbusquedaComponente, $busquedaCondicion, $nombreComponente);*/
         //Fin tickets_clasificados-----------------------------------------------------
         
         //Creando el componente tickets_tarea------------------------------------
@@ -632,7 +673,7 @@ final class Version20200425215229 extends AbstractMigration
         //Fin tickets_tarea-----------------------------------------------------
         
         //Creando el componente tickets_tarea_proceso------------------------------------
-        $nombreComponente = 'tickets_tarea_proceso';
+        /*$nombreComponente = 'tickets_tarea_proceso';
         $busquedaComponente = [
             'busqueda_idbusqueda' => $idbusqueda,
             'etiqueta' => 'Tickets en proceso',
@@ -664,11 +705,11 @@ final class Version20200425215229 extends AbstractMigration
             'codigo_where' => "a.iddocumento=b.documento_iddocumento and b.estado_ticket=3 {*filtrarResponsableTicket*}",
             'etiqueta_condicion' => $nombreComponente
         ];
-        $this->createBusquedaCondicion($idbusquedaComponente, $busquedaCondicion, $nombreComponente);
+        $this->createBusquedaCondicion($idbusquedaComponente, $busquedaCondicion, $nombreComponente);*/
         //Fin tickets_tarea_proceso-----------------------------------------------------
         
         //Creando el componente tickets_tarea_terminada------------------------------------
-        $nombreComponente = 'tickets_tarea_terminada';
+        /*$nombreComponente = 'tickets_tarea_terminada';
         $busquedaComponente = [
             'busqueda_idbusqueda' => $idbusqueda,
             'etiqueta' => 'Tickets terminadas',
@@ -700,7 +741,7 @@ final class Version20200425215229 extends AbstractMigration
             'codigo_where' => "a.iddocumento=b.documento_iddocumento and b.estado_ticket=4 {*filtrarResponsableTicket*}",
             'etiqueta_condicion' => $nombreComponente
         ];
-        $this->createBusquedaCondicion($idbusquedaComponente, $busquedaCondicion, $nombreComponente);
+        $this->createBusquedaCondicion($idbusquedaComponente, $busquedaCondicion, $nombreComponente);*/
         //Fin tickets_tarea_terminada-----------------------------------------------------
         
         

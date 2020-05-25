@@ -2,37 +2,57 @@
 
 namespace Saia\MesaAyuda\formatos\mesa_ayuda;
 
+use Doctrine\DBAL\Types\Type;
+use Saia\core\DatabaseConnection;
+
 class FtMesaAyuda extends FtMesaAyudaProperties
 {
-    const ESTADO_POR_CLASIFICAR = 1;
-    const ESTADO_PENDIENTE = 2;
-    const ESTADO_PROCESO = 3;
-    const ESTADO_TERMINADO = 4;
+    const ESTADO_PENDIENTE = 1;
+    const ESTADO_PROCESO = 2;
+    const ESTADO_TERMINADO = 3;
     
-    public $estados = array(0 => 'Pendiente por clasificar', 1 => 'Pendiente por clasificar', 2 => 'Pendiente', 3 => 'Proceso', 4 => 'Finalizado');
+    public $estados = array(self::ESTADO_PENDIENTE => 'Pendiente', self::ESTADO_PROCESO => 'Proceso', self::ESTADO_TERMINADO => 'Finalizado');
     
     public function __construct($id = null)
     {
         parent::__construct($id);
     }
     
-    public function getEstadoTicket(){      
+    public function getEstadoTicket(){
+        $cadenaRetorno = '';
+              
         $estadoAlmacenado = $this -> estado_ticket;
         if(!$estadoAlmacenado){
-          $estadoAlmacenado = 0;
+          $estadoAlmacenado = 1;
         }
-        //$estado = '<div class="badge badge-important" style="">' . $this -> estados [$estadoAlmacenado] . '</div>';
-        $estado = $this -> estados [$estadoAlmacenado];
         
-        return($estado);
+        if($estadoAlmacenado == self::ESTADO_PENDIENTE){
+            $cadenaRetorno = '<div class="badge badge-danger" style="">' . $this -> estados [$estadoAlmacenado] . '</div>';
+        } else {
+            $cadenaRetorno = '<div class="badge badge-success" style="">' . $this -> estados [$estadoAlmacenado] . '</div>';
+        }
+        
+        return($cadenaRetorno);
     }
     
-    public function actualizarEstadoTarea($idTarea){
-      if($idTarea){
-        $this -> estado_ticket = $this -> ESTADO_PENDIENTE;//Tarea asignada
-        if($this -> save()){
-          
+    public function getClasificacion(){
+        $cadenaRetorno = '';
+      
+        $clasificacion = $this -> clasificacion;
+        
+        $datoClasificacion = DatabaseConnection::getQueryBuilder()
+        ->select('a.nombre','b.nombre as padre')
+        ->from('ma_clasificacion','a')
+        ->leftJoin('a','ma_clasificacion','b','a.cod_padre=b.idma_clasificacion')
+        ->where('a.idma_clasificacion = :idma')
+        ->setParameter(':idma',$clasificacion, \Doctrine\DBAL\Types\Type::INTEGER)
+        ->execute()->fetchAll();
+        
+        if($datoClasificacion[0]["padre"]){
+            $cadenaRetorno .= $datoClasificacion[0]["padre"] . " - ";
         }
-      }
+        $cadenaRetorno .= $datoClasificacion[0]["nombre"];
+        
+        return($cadenaRetorno);
     }
 }

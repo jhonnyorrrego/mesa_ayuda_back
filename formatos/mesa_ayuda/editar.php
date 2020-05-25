@@ -22,7 +22,7 @@ use Saia\MesaAyuda\formatos\mesa_ayuda\FtMesaAyuda;
 
 SessionController::goUp($_REQUEST['token'], $_REQUEST['key']);
 
-$Formato = new Formato(47);
+$Formato = new Formato(53);
 $documentId = $_REQUEST['documentId'] ?? 0;
     $FtMesaAyuda = FtMesaAyuda::findByDocumentId($documentId);?><!DOCTYPE html>
 <html>
@@ -42,7 +42,7 @@ $documentId = $_REQUEST['documentId'] ?? 0;
                         <div class='card card-default'>
                 <div class='card-body'>
                     <h5 class='text-black w-100 text-center'>
-                        Mesa ayuda                    </h5>
+                        Mesa de ayuda                    </h5>
                     <form name='formulario_formatos' id='formulario_formatos' role='form' autocomplete='off'>
                         <input type='hidden' name='documento_iddocumento' value='<?= Saia\controllers\generator\component\ComponentBuilder::callShowValue(
                 'documento_iddocumento',
@@ -109,7 +109,7 @@ $documentId = $_REQUEST['documentId'] ?? 0;
             <label title=''>CLASIFICACIóN</label>
             <select class='full-width' name='pre_clasificacion' id='pre_clasificacion' >
             <option value=''>Por favor seleccione...</option>
-        <option value='114' data-key='1'>
+        <option value='120' data-key='1'>
                  
             </option></select>
                 <script>
@@ -124,7 +124,7 @@ $documentId = $_REQUEST['documentId'] ?? 0;
                         {
                             key: localStorage.getItem('key'),
                             token: localStorage.getItem('token'),
-                            fieldId: 9427,
+                            fieldId: 9485,
                             documentId: "<?= $documentId ?>"
                         },
                         function (response) {
@@ -211,7 +211,7 @@ $documentId = $_REQUEST['documentId'] ?? 0;
                                 $.post(baseUrl + options.ruta_consulta, {
                     token: localStorage.getItem('token'),
                     key: localStorage.getItem('key'),
-                    fieldId: 9423,
+                    fieldId: 9481,
                     documentId: <?= $documentId ?>                }, function (response) {
                     if (response.success) {
                         response.data.forEach(mockFile => {
@@ -290,10 +290,10 @@ $documentId = $_REQUEST['documentId'] ?? 0;
                 'clasificacion',
                 $FtMesaAyuda
             ) ?>'>
-<input type='hidden' name='campo_descripcion' value='9425'>
+<input type='hidden' name='campo_descripcion' value='9482'>
 					<input type='hidden' name='documentId' value='<?= $documentId ?>'>
 					<input type='hidden' id='tipo_radicado' name='tipo_radicado' value='mesa_ayuda'>
-					<input type='hidden' name='formatId' value='47'>
+					<input type='hidden' name='formatId' value='53'>
 					<input type='hidden' name='tabla' value='ft_mesa_ayuda'>
 					<input type='hidden' name='formato' value='mesa_ayuda'>
 					<div class='form-group px-0 pt-3' id='form_buttons'><button class='btn btn-complete' id='save_document' type='button'>Continuar</button><div class='progress-circle-indeterminate d-none' id='spiner'></div></div>                    </form>
@@ -329,7 +329,7 @@ $documentId = $_REQUEST['documentId'] ?? 0;
                     $("#add_item").click(function() {
                         checkForm((data) => {
                             let options = top.window.modalOptions;
-                            options.oldSource = null;
+                            top.window.modalOptions = null;
                             top.topModal(options)
                         })
                     });
@@ -351,19 +351,6 @@ $documentId = $_REQUEST['documentId'] ?? 0;
                     function checkForm(callback) {
                         $("#formulario_formatos").validate({
                             ignore: [],
-                            errorPlacement: function(error, element) {
-                                let node = element[0];
-
-                                if (
-                                    node.tagName == 'SELECT' &&
-                                    node.className.indexOf('select2') !== false
-                                ) {
-                                    error.addClass('pl-3');
-                                    element.next().append(error);
-                                } else {
-                                    error.insertAfter(element);
-                                }
-                            },
                             submitHandler: function(form) {
                                 $("#form_buttons").find('button,#spiner').toggleClass('d-none');
 

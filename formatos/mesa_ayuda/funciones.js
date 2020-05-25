@@ -115,10 +115,8 @@ function autoClasificar(){
 		
 		if(x_valor){
 			$('input[name$="clasificacion"]').val(x_valor);
-			$('input[name$="estado_ticket"]').val(2);
 		} else {
 			$('input[name$="clasificacion"]').val("");
-			$('input[name$="estado_ticket"]').val(1);
 		}
 		
 	});

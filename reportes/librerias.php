@@ -21,23 +21,6 @@ while ($max_salida > 0) {
 
 include_once $rootPath . "app/vendor/autoload.php";
 
-function mostrarPreClasificacionTicket($preclasificacion){
-  $cadenaRetorno = '';
-  
-  $clasificacion = DatabaseConnection::getQueryBuilder()
-        ->select('a.nombre','b.nombre as padre')
-        ->from('ma_clasificacion','a')
-        ->leftJoin('a','ma_clasificacion','b','a.cod_padre=b.idma_clasificacion')
-        ->where('a.idma_clasificacion = :idma')
-        ->setParameter(':idma',$preclasificacion, \Doctrine\DBAL\Types\Type::INTEGER)
-        ->execute()->fetchAll();
-        
-  if($clasificacion[0]["padre"]){
-    $cadenaRetorno .= $clasificacion[0]["padre"] . " - ";
-  }
-  $cadenaRetorno .= $clasificacion[0]["nombre"];
-  return($cadenaRetorno);
-}
 function mostrarUsuarioTicket($dependencia){
   $cadenaRetorno = '';
   
@@ -87,21 +70,12 @@ function generarSelectTicket($idMaClasificacion){
   return($opciones);
 }
 
-function mostrarClasificacionTicket($clasificacion){  
+function mostrarClasificacionTicket($idFtMesaAyuda){
+  global $FtMesaAyuda;
+    
   $cadenaRetorno = '';
-  
-  $datoClasificacion = DatabaseConnection::getQueryBuilder()
-        ->select('a.nombre','b.nombre as padre')
-        ->from('ma_clasificacion','a')
-        ->leftJoin('a','ma_clasificacion','b','a.cod_padre=b.idma_clasificacion')
-        ->where('a.idma_clasificacion = :idma')
-        ->setParameter(':idma',$clasificacion, \Doctrine\DBAL\Types\Type::INTEGER)
-        ->execute()->fetchAll();
-  
-  if($datoClasificacion[0]["padre"]){
-    $cadenaRetorno .= $datoClasificacion[0]["padre"] . " - ";
-  }
-  $cadenaRetorno .= $datoClasificacion[0]["nombre"];
+  $FtMesaAyuda = new FtMesaAyuda($idFtMesaAyuda);
+  $cadenaRetorno = $FtMesaAyuda -> getClasificacion();
 	
 	return($cadenaRetorno);
 }

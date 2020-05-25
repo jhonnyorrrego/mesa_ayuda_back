@@ -96,8 +96,8 @@ try {
       <td style="width:70%">&nbsp;<?= Saia\controllers\generator\component\ComponentBuilder::callShowValue('anexos',$FtMesaAyuda) ?></td>
     </tr>
     <tr>
-      <td style="width:30%"><strong>&nbsp;Clasificaci&oacute;n por usuario</strong></td>
-      <td style="width:70%">&nbsp;<?= Saia\controllers\generator\component\ComponentBuilder::callShowValue('pre_clasificacion',$FtMesaAyuda) ?></td>
+      <td style="width:30%"><strong>&nbsp;Clasificaci&oacute;n</strong></td>
+      <td style="width:70%">&nbsp;<?= $FtMesaAyuda->getClasificacion() ?></td>
     </tr>
     <tr>
       <td style="width:30%"><strong>&nbsp;Estado</strong></td>
