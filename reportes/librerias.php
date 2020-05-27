@@ -74,10 +74,22 @@ function mostrarClasificacionTicket($idFtMesaAyuda){
   global $FtMesaAyuda;
     
   $cadenaRetorno = '';
-  $FtMesaAyuda = new FtMesaAyuda($idFtMesaAyuda);
+  if(!$FtMesaAyuda){
+      $FtMesaAyuda = new FtMesaAyuda($idFtMesaAyuda);
+  }
   $cadenaRetorno = $FtMesaAyuda -> getClasificacion();
 	
 	return($cadenaRetorno);
+}
+
+function mostrarEstadoTicket($idFtMesaAyuda,$estado_ticket){
+    global $FtMesaAyuda;
+    if(!$FtMesaAyuda){
+        $FtMesaAyuda = new FtMesaAyuda($idFtMesaAyuda);
+    }
+    $cadenaRetorno = $FtMesaAyuda -> getEstadoTicket();
+    
+    return($cadenaRetorno);
 }
 
 function verRastroTicket($iddocumento){

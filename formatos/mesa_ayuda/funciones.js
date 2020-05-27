@@ -71,7 +71,7 @@ function afterConfirm(xhr){
 }
 
 function cargarOpcionesClasificacion(){
-	$.ajax({
+	/*$.ajax({
 		url : 'obtener_opciones_clasificacion.php',
 		type : 'POST',
 		dataType : 'json',
@@ -80,7 +80,7 @@ function cargarOpcionesClasificacion(){
 				$("#pre_clasificacion").append(respuesta.html);
 			}
 		}
-	});
+	});*/
 	
 	$.post(
       'obtener_opciones_clasificacion.php',
