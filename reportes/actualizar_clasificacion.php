@@ -37,7 +37,6 @@ try {
     
     $FtMesaAyuda = new FtMesaAyuda($_REQUEST['idft_mesa_ayuda']);
     $FtMesaAyuda -> clasificacion = $_REQUEST['clasificacion'];
-    $FtMesaAyuda -> estado_ticket = 2;//Clasificado
 
     if ($FtMesaAyuda->save()) {
         $Response->message = 'Clasificación asignada correctamente';

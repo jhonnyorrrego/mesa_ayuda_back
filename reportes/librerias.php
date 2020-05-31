@@ -74,11 +74,9 @@ function mostrarClasificacionTicket($idFtMesaAyuda){
   global $FtMesaAyuda;
     
   $cadenaRetorno = '';
-  if(!$FtMesaAyuda){
-      $FtMesaAyuda = new FtMesaAyuda($idFtMesaAyuda);
-  }
+  $FtMesaAyuda = new FtMesaAyuda($idFtMesaAyuda);
   $cadenaRetorno = $FtMesaAyuda -> getClasificacion();
-	
+
 	return($cadenaRetorno);
 }
 
@@ -120,12 +118,22 @@ function verDocumentoTicket($iddocumento,$numero){
 }
 
 function filtrarResponsableTicket(){
+  $cadena = "";
+  $estadoPendiente = FtMesaAyuda::ESTADO_PENDIENTE;
+  
   $usuarioCodigo = SessionController::getValue('funcionario_codigo');
   if($usuarioCodigo == 1){
-    $cadena = "";
+    $cadena .= "";
   } else {
-    $cadena = " and concat(',', d.responsables, ',') like '%," . $usuarioCodigo . ",%'";
+    $cadena .= " and concat(',', d.responsables, ',') like '%," . $usuarioCodigo . ",%'";
   }
+  
+  if(@$_REQUEST["estado"]){
+    $cadena .= " and b.estado_ticket=" . $_REQUEST["estado"];
+  } else {
+    $cadena .= " and b.estado_ticket=" . $estadoPendiente;
+  }
+  
   return($cadena);
 }
 
@@ -181,8 +189,8 @@ function vencimientoTicket($fecha,$tipo_dias,$cant_dias,$estado_ticket){
   }
   
   $interval = $hoy->diff($fechaFinalObject);//Resultado de dias al restar la fecha de hoy con la fecha final del ticket (Objeto)
-  $diasResta = $interval->format('%a');//Obtengo la cantidad de dias
-  
+  //$diasResta = $interval->format('%a');//Obtengo la cantidad de dias
+  $diasResta = ($interval->invert == 1) ? ' - ' . $interval->days  : $interval->days;
   
   
   if($estado_ticket == FtMesaAyuda::ESTADO_TERMINADO){//Si el ticket esta terminado
@@ -200,5 +208,29 @@ function vencimientoTicket($fecha,$tipo_dias,$cant_dias,$estado_ticket){
   $cadenaRetorno = "<span class='{$color}'>{$fechaFinal}</span>";
   
   return($cadenaRetorno);
+}
+
+function optionsTickets($idFtMesaAyuda,$iddocumento){
+    return '
+        <div class="dropdown" id="opciones_ticket' . $iddocumento . '">
+            <button class="btn" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="fa fa-ellipsis-v"></i>
+            </button>
+            <div class="dropdown-menu dropdown-menu-left bg-white" role="menu">
+                <a href="#" class="dropdown-item crear_tarea" iddocumento="' . $iddocumento. '">
+                    <i class="fa fa-calendar"></i> Asignar tarea
+                </a>
+                <a href="#" class="dropdown-item reclasificar" iddocumento="' . $iddocumento. '">
+                    <i class="fa fa-edit"></i> Reclasificar
+                </a>
+                <a href="#" class="dropdown-item show_task" iddocumento="' . $iddocumento. '">
+                    <i class="fa fa-eye"></i> Ver tareas
+                </a>
+            </div>
+        </div>
+        <br />
+        <div style="display:none" class="capaReclasifica' . $iddocumento . '">
+            ' . listarClasificacionesTicket($idFtMesaAyuda,$iddocumento) . '
+        </div>';
 }
 ?>

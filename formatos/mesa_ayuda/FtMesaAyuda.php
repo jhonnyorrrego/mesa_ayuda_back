@@ -11,7 +11,7 @@ class FtMesaAyuda extends FtMesaAyudaProperties
     const ESTADO_PROCESO = 2;
     const ESTADO_TERMINADO = 3;
     
-    public $estados = array(self::ESTADO_PENDIENTE => 'Pendiente', self::ESTADO_PROCESO => 'Proceso', self::ESTADO_TERMINADO => 'Finalizado');
+    public $estados = array(self::ESTADO_PENDIENTE => 'Pendiente', self::ESTADO_PROCESO => 'En proceso', self::ESTADO_TERMINADO => 'Finalizado');
     
     public function __construct($id = null)
     {

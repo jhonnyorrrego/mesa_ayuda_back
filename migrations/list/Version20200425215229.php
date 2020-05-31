@@ -68,7 +68,7 @@ final class Version20200425215229 extends AbstractMigration
             'enlace' => '',
             'cod_padre' => '0',
             'orden' => 5,
-            'color' => ''
+            'color' => 'bg-warning'
         ];
         
         $idAgrupador = $this->createModulo($data, "agrupador_{$name}");
@@ -536,7 +536,7 @@ final class Version20200425215229 extends AbstractMigration
             'nombre' => $nombreComponente,
             'orden' => 1,
             'url' => NULL,
-            'info' => '[{"title":"Ticket","field":"{*verDocumentoTicket@iddocumento,numero*}","align":"center"},{"title":"Fecha","field":"{*fecha*}","align":"center"},{"title":"Solicitante","field":"{*mostrarUsuarioTicket@dependencia*}","align":"center"},{"title":"Descripcion","field":"{*descripcion*}","align":"left"},{"title":"Clasificaci&oacute;n","field":"{*mostrarClasificacionTicket@id*}","align":"center"},{"title":"Vencimiento","field":"{*vencimientoTicket@fecha,tipo_dias,cant_dias,estado_ticket*}","align":"center"},{"title":"Estado","field":"{*mostrarEstadoTicket@id,estado_ticket*}","align":"center"},{"title":"Cantidad tareas","field":"{*contadorTareaTicket@iddocumento*}","align":"center"},{"title":"Acciones","field":"{*accionesTicket@iddocumento*}","align":"center"}]',
+            'info' => '[{"title":"Ticket","field":"{*verDocumentoTicket@iddocumento,numero*}","align":"center"},{"title":"Fecha","field":"{*fecha*}","align":"center"},{"title":"Solicitante","field":"{*mostrarUsuarioTicket@dependencia*}","align":"center"},{"title":"Descripcion","field":"{*descripcion*}","align":"left"},{"title":"Clasificaci&oacute;n","field":"{*mostrarClasificacionTicket@id*}","align":"center"},{"title":"Vencimiento","field":"{*vencimientoTicket@fecha,tipo_dias,cant_dias,estado_ticket*}","align":"center"},{"title":"Estado","field":"{*mostrarEstadoTicket@id,estado_ticket*}","align":"center"},{"title":"Cantidad tareas","field":"{*contadorTareaTicket@iddocumento*}","align":"center"},{"title":"Acciones","field":"{*optionsTickets@id,iddocumento*}","align":"center"}]',
             'encabezado_componente' => NULL,
             'campos_adicionales' => 'b.descripcion,b.idft_mesa_ayuda as id,b.clasificacion,b.dependencia,c.tipo_dias,c.cant_dias,b.estado_ticket',
             'tablas_adicionales' => 'ft_mesa_ayuda b join ma_clasificacion c on b.clasificacion=c.idma_clasificacion join ma_clasificacion d on c.cod_padre=d.idma_clasificacion',
@@ -558,7 +558,7 @@ final class Version20200425215229 extends AbstractMigration
         //Se crea la condicion para el componente tickets pendientes
         $busquedaCondicion = [
             'fk_busqueda_componente' => $idbusquedaComponente,
-            'codigo_where' => "a.iddocumento=b.documento_iddocumento and b.estado_ticket=1 {*filtrarResponsableTicket*}",
+            'codigo_where' => "a.iddocumento=b.documento_iddocumento {*filtrarResponsableTicket*}",
             'etiqueta_condicion' => $nombreComponente
         ];
         $this->createBusquedaCondicion($idbusquedaComponente, $busquedaCondicion, $nombreComponente);
