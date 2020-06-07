@@ -374,8 +374,8 @@ final class Version20200425215229 extends AbstractMigration
                 'formato_idformato' => $idFormato,
                 'nombre' => 'descripcion',
                 'etiqueta' => 'Descripción',
-                'tipo_dato' => 'string',
-                'longitud' => 255,
+                'tipo_dato' => 'text',
+                'longitud' => NULL,
                 'obligatoriedad' => '1',
                 'valor' => '',
                 'acciones' => 'a,e,p',
@@ -388,6 +388,26 @@ final class Version20200425215229 extends AbstractMigration
                 'placeholder' => 'campo texto con formato',
                 'longitud_vis' => NULL,
                 'opciones' => '{"avanzado":false}',
+                'listable' => 1
+            ],
+            'responsable' => [
+                'formato_idformato' => $idFormato,
+                'nombre' => 'responsable',
+                'etiqueta' => 'Responsable',
+                'tipo_dato' => 'string',
+                'longitud' => '255',
+                'obligatoriedad' => '0',
+                'valor' => '',
+                'acciones' => 'a,e,b',
+                'ayuda' => NULL,
+                'predeterminado' => NULL,
+                'banderas' => '',
+                'etiqueta_html' => 'Hidden',
+                'orden' => 5,
+                'fila_visible' => 1,
+                'placeholder' => '',
+                'longitud_vis' => NULL,
+                'opciones' => '',
                 'listable' => 1
             ],
             'estado_ticket' => [
@@ -410,7 +430,7 @@ final class Version20200425215229 extends AbstractMigration
                 'opciones' => '',
                 'listable' => 1
             ],
-      'clasificacion' => [
+            'clasificacion' => [
                 'formato_idformato' => $idFormato,
                 'nombre' => 'clasificacion',
                 'etiqueta' => 'Clasificacion',
@@ -436,7 +456,7 @@ final class Version20200425215229 extends AbstractMigration
                 'etiqueta' => 'Clasificación',
                 'tipo_dato' => 'string',
                 'longitud' => 255,
-                'obligatoriedad' => '0',
+                'obligatoriedad' => '1',
                 'valor' => '1,1;2,2;3,3;4,4',
                 'acciones' => 'a,e',
                 'ayuda' => NULL,
@@ -543,7 +563,8 @@ final class Version20200425215229 extends AbstractMigration
             'ordenado_por' => 'a.fecha',
             'direccion' => 'desc',
             'agrupado_por' => NULL,
-            'busqueda_avanzada' => NULL,
+            'busqueda_avanzada' => 'views/modules/mesa_ayuda/views/reportes/busqueda_avanzada.php',
+            'acciones_seleccionados' => 'opciones_tickets',
             'enlace_adicionar' => NULL,
             'llave' => 'a.iddocumento'
         ];
@@ -558,136 +579,30 @@ final class Version20200425215229 extends AbstractMigration
         //Se crea la condicion para el componente tickets pendientes
         $busquedaCondicion = [
             'fk_busqueda_componente' => $idbusquedaComponente,
-            'codigo_where' => "a.iddocumento=b.documento_iddocumento {*filtrarResponsableTicket*}",
+            'codigo_where' => "a.iddocumento=b.documento_iddocumento and b.estado_ticket=1 {*filtrarResponsableTicket*}",
             'etiqueta_condicion' => $nombreComponente
         ];
         $this->createBusquedaCondicion($idbusquedaComponente, $busquedaCondicion, $nombreComponente);
         //Fin tickets_pendientes-----------------------------------------------------
         
-        //Creando el componente tickets_pendientes--------------------------------------
-        /*$nombreComponente = 'tickets_pendientes';
-        $busquedaComponente = [
-            'busqueda_idbusqueda' => $idbusqueda,
-            'etiqueta' => 'Tickets pendientes',
-            'nombre' => $nombreComponente,
-            'orden' => 1,
-            'url' => NULL,
-            'info' => '[{"title":"Ticket","field":"{*verDocumentoTicket@iddocumento,numero*}","align":"center"},{"title":"Fecha","field":"{*fecha*}","align":"center"},{"title":"Solicitante","field":"{*mostrarUsuarioTicket@dependencia*}","align":"center"},{"title":"Descripcion","field":"{*descripcion*}","align":"left"},{"title":"Clasificacion","field":"{*mostrarClasificacionTicket@clasificacion*}","align":"center"},{"title":"Clasificar","field":"{*listarClasificacionesTicket@id,iddocumento*}","align":"center"}]',
-            'encabezado_componente' => NULL,
-            'campos_adicionales' => 'b.descripcion,b.idft_mesa_ayuda as id,b.clasificacion,b.dependencia',
-            'tablas_adicionales' => 'ft_mesa_ayuda b',
-            'ordenado_por' => 'a.fecha',
-            'direccion' => 'desc',
-            'agrupado_por' => NULL,
-            'busqueda_avanzada' => NULL,
-            'enlace_adicionar' => NULL,
-            'llave' => 'a.iddocumento'
-        ];
-        $idbusquedaComponente = $this->createBusquedaComponente($idbusqueda, $busquedaComponente, $nombreComponente);
         
-        $this->connection->update('busqueda_componente', [
-            'url' => 'views/buzones/grilla.php?idbusqueda_componente=' . $idbusquedaComponente
-        ], [
-            'idbusqueda_componente' => $idbusquedaComponente
-        ]);
-        
-        //Se crea la condicion para el componente tickets pendientes
-        $busquedaCondicion = [
-            'fk_busqueda_componente' => $idbusquedaComponente,
-            'codigo_where' => "a.iddocumento=b.documento_iddocumento and (b.estado_ticket is null or b.estado_ticket='' or b.estado_ticket=1)",
-            'etiqueta_condicion' => $nombreComponente
-        ];
-        $this->createBusquedaCondicion($idbusquedaComponente, $busquedaCondicion, $nombreComponente);*/
-        //Fin tickets_pendientes--------------------------------------------------------
-        
-        //Creando el componente tickets_clasificados------------------------------------
-        /*$nombreComponente = 'tickets_clasificados';
-        $busquedaComponente = [
-            'busqueda_idbusqueda' => $idbusqueda,
-            'etiqueta' => 'Tickets clasificados',
-            'nombre' => $nombreComponente,
-            'orden' => 1,
-            'url' => NULL,
-            'info' => '[{"title":"Ticket","field":"{*verDocumentoTicket@iddocumento,numero*}","align":"center"},{"title":"Fecha","field":"{*fecha*}","align":"center"},{"title":"Solicitante","field":"{*mostrarUsuarioTicket@dependencia*}","align":"center"},{"title":"Descripcion","field":"{*descripcion*}","align":"left"},{"title":"Clasificaci&oacute;n","field":"{*mostrarClasificacionTicket@clasificacion*}","align":"center"},{"title":"Vencimiento","field":"{*vencimientoTicket@fecha,tipo_dias,cant_dias,estado_ticket*}","align":"center"},{"title":"Clasificar","field":"{*listarClasificacionesTicket@id,iddocumento*}","align":"center"},{"title":"Acciones","field":"{*accionesTicket@iddocumento*}","align":"center"}]',
-            'encabezado_componente' => NULL,
-            'campos_adicionales' => 'b.descripcion,b.idft_mesa_ayuda as id,b.clasificacion,b.dependencia,c.tipo_dias,c.cant_dias,b.estado_ticket',
-            'tablas_adicionales' => 'ft_mesa_ayuda b join ma_clasificacion c on b.clasificacion=c.idma_clasificacion join ma_clasificacion d on c.cod_padre=d.idma_clasificacion',
-            'ordenado_por' => 'a.fecha',
-            'direccion' => 'desc',
-            'agrupado_por' => NULL,
-            'busqueda_avanzada' => NULL,
-            'enlace_adicionar' => NULL,
-            'llave' => 'a.iddocumento'
-        ];
-        $idbusquedaComponente = $this->createBusquedaComponente($idbusqueda, $busquedaComponente, $nombreComponente);
-        
-        $this->connection->update('busqueda_componente', [
-            'url' => 'views/buzones/grilla.php?idbusqueda_componente=' . $idbusquedaComponente
-        ], [
-            'idbusqueda_componente' => $idbusquedaComponente
-        ]);
-        
-        //Se crea la condicion para el componente tickets clasificados
-        $busquedaCondicion = [
-            'fk_busqueda_componente' => $idbusquedaComponente,
-            'codigo_where' => "a.iddocumento=b.documento_iddocumento and b.estado_ticket=2 {*filtrarResponsableTicket*}",
-            'etiqueta_condicion' => $nombreComponente
-        ];
-        $this->createBusquedaCondicion($idbusquedaComponente, $busquedaCondicion, $nombreComponente);*/
-        //Fin tickets_clasificados-----------------------------------------------------
-        
-        //Creando el componente tickets_tarea------------------------------------
-       /* $nombreComponente = 'tickets_tarea';
-        $busquedaComponente = [
-            'busqueda_idbusqueda' => $idbusqueda,
-            'etiqueta' => 'Tickets Asignado',
-            'nombre' => $nombreComponente,
-            'orden' => 1,
-            'url' => NULL,
-            'info' => '[{"title":"Ticket","field":"{*verDocumentoTicket@iddocumento,numero*}","align":"center"},{"title":"Fecha","field":"{*fecha*}","align":"center"},{"title":"Usuario","field":"{*mostrarUsuarioTicket@dependencia*}","align":"center"},{"title":"Clasificaci&oacute;n","field":"{*mostrarClasificacionTicket@clasificacion*}","align":"center"},{"title":"Descripcion","field":"{*descripcion*}","align":"center"},{"title":"Cantidad tareas","field":"{*contadorTareaTicket@iddocumento*}","align":"center"}]',
-            'encabezado_componente' => NULL,
-            'campos_adicionales' => 'b.descripcion,b.idft_mesa_ayuda as id,b.clasificacion,b.dependencia',
-            'tablas_adicionales' => 'ft_mesa_ayuda b join ma_clasificacion c on b.clasificacion=c.idma_clasificacion join ma_clasificacion d on c.cod_padre=d.idma_clasificacion',
-            'ordenado_por' => 'a.fecha',
-            'direccion' => 'desc',
-            'agrupado_por' => NULL,
-            'busqueda_avanzada' => NULL,
-            'enlace_adicionar' => NULL,
-            'llave' => 'a.iddocumento'
-        ];
-        $idbusquedaComponente = $this->createBusquedaComponente($idbusqueda, $busquedaComponente, $nombreComponente);
-        
-        $this->connection->update('busqueda_componente', [
-            'url' => 'views/buzones/grilla.php?idbusqueda_componente=' . $idbusquedaComponente
-        ], [
-            'idbusqueda_componente' => $idbusquedaComponente
-        ]);
-        
-        //Se crea la condicion para el componente tickets clasificados
-        $busquedaCondicion = [
-            'fk_busqueda_componente' => $idbusquedaComponente,
-            'codigo_where' => "a.iddocumento=b.documento_iddocumento and b.estado_ticket=3 {*filtrarResponsableTicket*}",
-            'etiqueta_condicion' => $nombreComponente
-        ];
-        $this->createBusquedaCondicion($idbusquedaComponente, $busquedaCondicion, $nombreComponente);*/
-        //Fin tickets_tarea-----------------------------------------------------
-        
-        //Creando el componente tickets_tarea_proceso------------------------------------
-        /*$nombreComponente = 'tickets_tarea_proceso';
+        //Creando el componente tickets_proceso------------------------------------
+        $nombreComponente = 'tickets_proceso';
         $busquedaComponente = [
             'busqueda_idbusqueda' => $idbusqueda,
             'etiqueta' => 'Tickets en proceso',
             'nombre' => $nombreComponente,
             'orden' => 1,
             'url' => NULL,
-            'info' => '[{"title":"Ticket","field":"{*verDocumentoTicket@iddocumento,numero*}","align":"center"},{"title":"Fecha","field":"{*fecha*}","align":"center"},{"title":"Solicitante","field":"{*mostrarUsuarioTicket@dependencia*}","align":"center"},{"title":"Descripcion","field":"{*descripcion*}","align":"left"},{"title":"Clasificaci&oacute;n","field":"{*mostrarClasificacionTicket@clasificacion*}","align":"center"},{"title":"Vencimiento","field":"{*vencimientoTicket@fecha,tipo_dias,cant_dias,estado_ticket*}","align":"center"},{"title":"Cantidad tareas","field":"{*contadorTareaTicket@iddocumento*}","align":"center"},{"title":"Acciones","field":"{*accionesTicket@iddocumento*}","align":"center"}]',
+            'info' => '[{"title":"Ticket","field":"{*verDocumentoTicket@iddocumento,numero*}","align":"center"},{"title":"Fecha","field":"{*fecha*}","align":"center"},{"title":"Solicitante","field":"{*mostrarUsuarioTicket@dependencia*}","align":"center"},{"title":"Descripcion","field":"{*descripcion*}","align":"left"},{"title":"Clasificaci&oacute;n","field":"{*mostrarClasificacionTicket@id*}","align":"center"},{"title":"Vencimiento","field":"{*vencimientoTicket@fecha,tipo_dias,cant_dias,estado_ticket*}","align":"center"},{"title":"Estado","field":"{*mostrarEstadoTicket@id,estado_ticket*}","align":"center"},{"title":"Cantidad tareas","field":"{*contadorTareaTicket@iddocumento*}","align":"center"},{"title":"Acciones","field":"{*optionsTickets@id,iddocumento*}","align":"center"}]',
             'encabezado_componente' => NULL,
             'campos_adicionales' => 'b.descripcion,b.idft_mesa_ayuda as id,b.clasificacion,b.dependencia,c.tipo_dias,c.cant_dias,b.estado_ticket',
             'tablas_adicionales' => 'ft_mesa_ayuda b join ma_clasificacion c on b.clasificacion=c.idma_clasificacion join ma_clasificacion d on c.cod_padre=d.idma_clasificacion',
             'ordenado_por' => 'a.fecha',
             'direccion' => 'desc',
             'agrupado_por' => NULL,
-            'busqueda_avanzada' => NULL,
+            'busqueda_avanzada' => 'views/modules/mesa_ayuda/views/reportes/busqueda_avanzada.php',
+            'acciones_seleccionados' => 'opciones_tickets',
             'enlace_adicionar' => NULL,
             'llave' => 'a.iddocumento'
         ];
@@ -699,50 +614,52 @@ final class Version20200425215229 extends AbstractMigration
             'idbusqueda_componente' => $idbusquedaComponente
         ]);
         
-        //Se crea la condicion para el componente tickets clasificados
+        //Se crea la condicion para el componente tickets proceso
+        $busquedaCondicion = [
+            'fk_busqueda_componente' => $idbusquedaComponente,
+            'codigo_where' => "a.iddocumento=b.documento_iddocumento and b.estado_ticket=2 {*filtrarResponsableTicket*}",
+            'etiqueta_condicion' => $nombreComponente
+        ];
+        $this->createBusquedaCondicion($idbusquedaComponente, $busquedaCondicion, $nombreComponente);
+        //Fin tickets_proceso-----------------------------------------------------
+        
+        
+        //Creando el componente tickets_terminado------------------------------------
+        $nombreComponente = 'tickets_terminado';
+        $busquedaComponente = [
+            'busqueda_idbusqueda' => $idbusqueda,
+            'etiqueta' => 'Tickets terminados',
+            'nombre' => $nombreComponente,
+            'orden' => 1,
+            'url' => NULL,
+            'info' => '[{"title":"Ticket","field":"{*verDocumentoTicket@iddocumento,numero*}","align":"center"},{"title":"Fecha","field":"{*fecha*}","align":"center"},{"title":"Solicitante","field":"{*mostrarUsuarioTicket@dependencia*}","align":"center"},{"title":"Descripcion","field":"{*descripcion*}","align":"left"},{"title":"Clasificaci&oacute;n","field":"{*mostrarClasificacionTicket@id*}","align":"center"},{"title":"Vencimiento","field":"{*vencimientoTicket@fecha,tipo_dias,cant_dias,estado_ticket*}","align":"center"},{"title":"Estado","field":"{*mostrarEstadoTicket@id,estado_ticket*}","align":"center"},{"title":"Cantidad tareas","field":"{*contadorTareaTicket@iddocumento*}","align":"center"},{"title":"Acciones","field":"{*optionsTickets@id,iddocumento*}","align":"center"}]',
+            'encabezado_componente' => NULL,
+            'campos_adicionales' => 'b.descripcion,b.idft_mesa_ayuda as id,b.clasificacion,b.dependencia,c.tipo_dias,c.cant_dias,b.estado_ticket',
+            'tablas_adicionales' => 'ft_mesa_ayuda b join ma_clasificacion c on b.clasificacion=c.idma_clasificacion join ma_clasificacion d on c.cod_padre=d.idma_clasificacion',
+            'ordenado_por' => 'a.fecha',
+            'direccion' => 'desc',
+            'agrupado_por' => NULL,
+            'busqueda_avanzada' => 'views/modules/mesa_ayuda/views/reportes/busqueda_avanzada.php',
+            'acciones_seleccionados' => 'opciones_tickets',
+            'enlace_adicionar' => NULL,
+            'llave' => 'a.iddocumento'
+        ];
+        $idbusquedaComponente = $this->createBusquedaComponente($idbusqueda, $busquedaComponente, $nombreComponente);
+        
+        $this->connection->update('busqueda_componente', [
+            'url' => 'views/buzones/grilla.php?idbusqueda_componente=' . $idbusquedaComponente
+        ], [
+            'idbusqueda_componente' => $idbusquedaComponente
+        ]);
+        
+        //Se crea la condicion para el componente tickets terminado
         $busquedaCondicion = [
             'fk_busqueda_componente' => $idbusquedaComponente,
             'codigo_where' => "a.iddocumento=b.documento_iddocumento and b.estado_ticket=3 {*filtrarResponsableTicket*}",
             'etiqueta_condicion' => $nombreComponente
         ];
-        $this->createBusquedaCondicion($idbusquedaComponente, $busquedaCondicion, $nombreComponente);*/
-        //Fin tickets_tarea_proceso-----------------------------------------------------
-        
-        //Creando el componente tickets_tarea_terminada------------------------------------
-        /*$nombreComponente = 'tickets_tarea_terminada';
-        $busquedaComponente = [
-            'busqueda_idbusqueda' => $idbusqueda,
-            'etiqueta' => 'Tickets terminadas',
-            'nombre' => $nombreComponente,
-            'orden' => 1,
-            'url' => NULL,
-            'info' => '[{"title":"Ticket","field":"{*verDocumentoTicket@iddocumento,numero*}","align":"center"},{"title":"Fecha","field":"{*fecha*}","align":"center"},{"title":"Solicitante","field":"{*mostrarUsuarioTicket@dependencia*}","align":"center"},{"title":"Descripcion","field":"{*descripcion*}","align":"left"},{"title":"Clasificaci&oacute;n","field":"{*mostrarClasificacionTicket@clasificacion*}","align":"center"},{"title":"Vencimiento","field":"{*vencimientoTicket@fecha,tipo_dias,cant_dias,estado_ticket*}","align":"center"},{"title":"Cantidad tareas","field":"{*contadorTareaTicket@iddocumento*}","align":"center"},{"title":"Acciones","field":"{*accionesTicket@iddocumento*}","align":"center"}]',
-            'encabezado_componente' => NULL,
-            'campos_adicionales' => 'b.descripcion,b.idft_mesa_ayuda as id,b.clasificacion,b.dependencia,c.tipo_dias,c.cant_dias,b.estado_ticket',
-            'tablas_adicionales' => 'ft_mesa_ayuda b join ma_clasificacion c on b.clasificacion=c.idma_clasificacion join ma_clasificacion d on c.cod_padre=d.idma_clasificacion',
-            'ordenado_por' => 'a.fecha',
-            'direccion' => 'desc',
-            'agrupado_por' => NULL,
-            'busqueda_avanzada' => NULL,
-            'enlace_adicionar' => NULL,
-            'llave' => 'a.iddocumento'
-        ];
-        $idbusquedaComponente = $this->createBusquedaComponente($idbusqueda, $busquedaComponente, $nombreComponente);
-        
-        $this->connection->update('busqueda_componente', [
-            'url' => 'views/buzones/grilla.php?idbusqueda_componente=' . $idbusquedaComponente
-        ], [
-            'idbusqueda_componente' => $idbusquedaComponente
-        ]);
-        
-        //Se crea la condicion para el componente tickets clasificados
-        $busquedaCondicion = [
-            'fk_busqueda_componente' => $idbusquedaComponente,
-            'codigo_where' => "a.iddocumento=b.documento_iddocumento and b.estado_ticket=4 {*filtrarResponsableTicket*}",
-            'etiqueta_condicion' => $nombreComponente
-        ];
-        $this->createBusquedaCondicion($idbusquedaComponente, $busquedaCondicion, $nombreComponente);*/
-        //Fin tickets_tarea_terminada-----------------------------------------------------
+        $this->createBusquedaCondicion($idbusquedaComponente, $busquedaCondicion, $nombreComponente);
+        //Fin tickets_terminado-----------------------------------------------------
         
         
         //Se crea la busqueda tickets

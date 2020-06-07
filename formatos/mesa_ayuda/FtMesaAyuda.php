@@ -55,4 +55,27 @@ class FtMesaAyuda extends FtMesaAyudaProperties
         
         return($cadenaRetorno);
     }
+    
+    /**
+     * Funcion ejecutada posterior al adicionar un Ticket
+     *
+     * @return boolean
+     * @author Mauricio Orrego <mauricio.orrego@cerok.com>
+     * @date 2020
+     */
+    public function afterAdd()
+    {
+        $clasificacion = $this -> clasificacion;
+        
+        $datosClasificacion = DatabaseConnection::getQueryBuilder()
+        ->select('b.responsables')
+        ->from('ma_clasificacion','a')
+        ->leftJoin('a','ma_clasificacion','b','a.cod_padre=b.idma_clasificacion')
+        ->where('a.idma_clasificacion = :idma')
+        ->setParameter(':idma',$clasificacion, \Doctrine\DBAL\Types\Type::INTEGER)
+        ->execute()->fetchAll();
+        
+        $this -> responsable = $datosClasificacion[0]["responsables"];
+        $this -> update();
+    }
 }

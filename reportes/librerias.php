@@ -128,12 +128,6 @@ function filtrarResponsableTicket(){
     $cadena .= " and concat(',', d.responsables, ',') like '%," . $usuarioCodigo . ",%'";
   }
   
-  if(@$_REQUEST["estado"]){
-    $cadena .= " and b.estado_ticket=" . $_REQUEST["estado"];
-  } else {
-    $cadena .= " and b.estado_ticket=" . $estadoPendiente;
-  }
-  
   return($cadena);
 }
 
@@ -194,14 +188,14 @@ function vencimientoTicket($fecha,$tipo_dias,$cant_dias,$estado_ticket){
   
   
   if($estado_ticket == FtMesaAyuda::ESTADO_TERMINADO){//Si el ticket esta terminado
-    $color = 'label label-success';//verde
+    $color = 'badge badge-success';//verde
   } else {
     if($diasResta > 3){//Si los dias son mayor a 4
-      $color = 'label label-secondary';//Gris
+      $color = 'badge badge-secondary';//Gris
     } else if($diasResta <= 3 && $diasResta >= 1){//Si los dias son 
-      $color = 'label label-warning';//Amarillo
+      $color = 'badge badge-warning';//Amarillo
     } else if($diasResta < 1){
-      $color = 'label label-danger';//Rojo
+      $color = 'badge badge-danger';//Rojo
     }
   }
   

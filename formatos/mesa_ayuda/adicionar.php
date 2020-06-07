@@ -22,7 +22,7 @@ use Saia\MesaAyuda\formatos\mesa_ayuda\FtMesaAyuda;
 
 SessionController::goUp($_REQUEST['token'], $_REQUEST['key']);
 
-$Formato = new Formato(53);
+$Formato = new Formato(54);
 $documentId = $_REQUEST['documentId'] ?? 0;
     $FtMesaAyuda = new FtMesaAyuda;?><!DOCTYPE html>
 <html>
@@ -93,11 +93,11 @@ $documentId = $_REQUEST['documentId'] ?? 0;
         }
         ?>
 
-        <div class='form-group form-group-default form-group-default-select2 ' id='group_pre_clasificacion'>
+        <div class='form-group form-group-default form-group-default-select2 required' id='group_pre_clasificacion'>
             <label title=''>CLASIFICACIóN</label>
-            <select class='full-width' name='pre_clasificacion' id='pre_clasificacion' >
+            <select class='full-width' name='pre_clasificacion' id='pre_clasificacion' required>
             <option value=''>Por favor seleccione...</option>
-        <option value='120' data-key='1'>
+        <option value='121' data-key='1'>
                  
             </option></select>
                 <script>
@@ -207,12 +207,13 @@ $documentId = $_REQUEST['documentId'] ?? 0;
     });
 </script>
 <input type='hidden' name='estado_ticket' value='1'>
+<input type='hidden' name='responsable' value=''>
 <input type='hidden' name='clasificacion' value=''>
 <input type='hidden' name='anterior' value='<?= $_REQUEST['anterior'] ?>'>
-					<input type='hidden' name='campo_descripcion' value='9482'>
+					<input type='hidden' name='campo_descripcion' value='9493'>
 					<input type='hidden' name='documentId' value='<?= $documentId ?>'>
 					<input type='hidden' id='tipo_radicado' name='tipo_radicado' value='mesa_ayuda'>
-					<input type='hidden' name='formatId' value='53'>
+					<input type='hidden' name='formatId' value='54'>
 					<input type='hidden' name='tabla' value='ft_mesa_ayuda'>
 					<input type='hidden' name='formato' value='mesa_ayuda'>
 					<div class='form-group px-0 pt-3' id='form_buttons'><button class='btn btn-complete' id='save_document' type='button'>Continuar</button><div class='progress-circle-indeterminate d-none' id='spiner'></div></div>                    </form>

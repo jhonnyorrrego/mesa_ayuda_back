@@ -25,7 +25,8 @@ class FtMesaAyudaProperties extends ModelFormat
 				'firma',
 				'idft_mesa_ayuda',
 				'pre_clasificacion',
-				'pre_clasificacion_json' 
+				'pre_clasificacion_json',
+				'responsable' 
             ],
             'date' => [],
             'table' => 'ft_mesa_ayuda',
