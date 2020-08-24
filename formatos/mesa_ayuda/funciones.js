@@ -12,6 +12,7 @@ function edit(data){
 //evento ejecutado en el mostrar
 function show(data){
     let baseUrl = window.getBaseUrl();
+    eventoGuardarComentario();
 }
 
 //evento ejecutado anterior al adicionar
@@ -120,4 +121,93 @@ function autoClasificar(){
 		}
 		
 	});
+}
+
+function eventoGuardarComentario(){
+		$("#save_document").click(function(){
+			
+				var confirmacionComentario = top.confirm({
+            id: 'question',
+            type: 'success',
+            title: 'Guardando!',
+            message: 'Esta seguro de guardar este comentario?',
+            position: 'center',
+            timeout: 0,
+            buttons: [
+                [
+                    '<button><b>Si</b></button>',
+                    function (instance, toast) {
+                    		
+                    		envioGuardarComentario();
+                    		
+                        instance.hide(
+                            {transitionOut: 'fadeOut'},
+                            toast,
+                            'button'
+                        );
+                    },
+                    true
+                ],
+                [
+                    '<button>NO</button>',
+                    function (instance, toast) {
+                        instance.hide(
+                            {transitionOut: 'fadeOut'},
+                            toast,
+                            'button'
+                        );
+                    }
+                ]
+            ]
+        });
+    });
+}
+
+function envioGuardarComentario(){		
+		var Comentario = new Object();
+		Comentario.comment = $("#descripcion").val();
+		if(!Comentario.comment){
+				top.notification({
+            message: 'Escribe un comentario',
+            type: 'error',
+            title: 'Error!'
+        });
+        
+        return false;
+		}
+		
+		var iddoc = $("#iddoc").val();
+		
+    $.ajax({
+        url: `../../app/comentarios/guardar.php`,
+        dataType: 'json',
+        type: 'POST',
+        async: false,
+        data: {
+            token: localStorage.getItem('token'),
+            key: localStorage.getItem('key'),
+            relation: iddoc,
+            comment: Comentario
+        },
+        success: function(response) {
+            if (response.success) {
+            		top.notification({
+                    message: 'Comentario registrado',
+                    type: 'success',
+                    title: ''
+                });
+                data = true;
+                location.reload();
+                
+            } else {
+                top.notification({
+                    message: response.message,
+                    type: 'error',
+                    title: 'Error!'
+                });
+            }
+        }
+    });
+
+    return data;
 }

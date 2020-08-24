@@ -283,39 +283,8 @@ final class Version20200425215229 extends AbstractMigration
             'ruta_editar' => "app/modules/back_{$name}/formatos/{$name}/editar.php",
             'ruta_adicionar' => "app/modules/back_{$name}/formatos/{$name}/adicionar.php",
             'ruta_buscar' => "app/modules/back_{$name}/formatos/{$name}/buscar.php",
-            'encabezado' => 1,
-            'cuerpo' => '<p style="text-align:right">{*mostrar_qr*}</p>
-<table border="1" cellpadding="1" cellspacing="1" class="table table-bordered" style="width:100%">
-  <tbody>
-    <tr>
-      <td colspan="2" style="text-align:center"><strong>Descripci&oacute;n del ticket</strong></td>
-    </tr>
-    <tr>
-      <td colspan="2" style="text-align:justify">{*descripcion*}</td>
-    </tr>
-    <tr>
-      <td style="width:30%"><strong>&nbsp;Fecha de solicitud</strong></td>
-      <td style="width:70%">&nbsp;{*fecha_aprobacion*}</td>
-    </tr>
-    <tr>
-      <td style="width:30%"><strong>&nbsp;Solicitante</strong></td>
-      <td style="width:70%">&nbsp;{*creador_documento*}</td>
-    </tr>
-    <tr>
-      <td style="width:30%"><strong>&nbsp;Anexos digitales</strong></td>
-      <td style="width:70%">&nbsp;{*anexos*}</td>
-    </tr>
-    <tr>
-      <td style="width:30%"><strong>&nbsp;Clasificaci&oacute;n</strong></td>
-      <td style="width:70%">&nbsp;{*getClasificacion*}</td>
-    </tr>
-    <tr>
-      <td style="width:30%"><strong>&nbsp;Estado</strong></td>
-      <td style="width:70%">&nbsp;{*getEstadoTicket*}</td>
-    </tr>
-  </tbody>
-</table>
-<p>{*mostrar_estado_proceso*}</p>',
+            'encabezado' => 0,
+            'cuerpo' => '<p>{*mostrarInfoTicket*}</p>',
             'pie_pagina' => 0,
             'margenes' => '25,25,25,25',
             'orientacion' => 0,
@@ -331,12 +300,13 @@ final class Version20200425215229 extends AbstractMigration
             //'firma_digital' => 0,
             'fk_categoria_formato' => $categoriaFormato[0]['idcategoria_formato'],
             //'funcion_predeterminada' => 0,
-            'paginar' => 0,
+            //'paginar' => 0,
             'pertenece_nucleo' => 0,
             'descripcion_formato' => 'Formulario para registrar requerimiento',
             'version' => 1,
             'module' => $name,
-            'banderas' => 'e,asunto_padre'
+            'banderas' => 'e,asunto_padre',
+            'publicar' => 1
         ];
 
         $this->connection->insert('formato', $data);
@@ -456,16 +426,16 @@ final class Version20200425215229 extends AbstractMigration
                 'etiqueta' => 'Clasificación',
                 'tipo_dato' => 'string',
                 'longitud' => 255,
-                'obligatoriedad' => '1',
-                'valor' => '1,1;2,2;3,3;4,4',
+                'obligatoriedad' => '0',
+                'valor' => '{*pre_clasificacion_funcion_add*}',
                 'acciones' => 'a,e',
                 'ayuda' => NULL,
                 'predeterminado' => NULL,
                 'banderas' => '',
-                'etiqueta_html' => 'Select',
+                'etiqueta_html' => 'Method',
                 'orden' => 2,
                 'fila_visible' => 1,
-                'placeholder' => 'seleccionar..',
+                'placeholder' => '',
                 'longitud_vis' => NULL,
                 'opciones' => '',
                 'listable' => 1
@@ -556,7 +526,7 @@ final class Version20200425215229 extends AbstractMigration
             'nombre' => $nombreComponente,
             'orden' => 1,
             'url' => NULL,
-            'info' => '[{"title":"Ticket","field":"{*verDocumentoTicket@iddocumento,numero*}","align":"center"},{"title":"Fecha","field":"{*fecha*}","align":"center"},{"title":"Solicitante","field":"{*mostrarUsuarioTicket@dependencia*}","align":"center"},{"title":"Descripcion","field":"{*descripcion*}","align":"left"},{"title":"Clasificaci&oacute;n","field":"{*mostrarClasificacionTicket@id*}","align":"center"},{"title":"Vencimiento","field":"{*vencimientoTicket@fecha,tipo_dias,cant_dias,estado_ticket*}","align":"center"},{"title":"Estado","field":"{*mostrarEstadoTicket@id,estado_ticket*}","align":"center"},{"title":"Cantidad tareas","field":"{*contadorTareaTicket@iddocumento*}","align":"center"},{"title":"Acciones","field":"{*optionsTickets@id,iddocumento*}","align":"center"}]',
+            'info' => '[{"title":"Ticket","field":"{*verDocumentoTicket@iddocumento,numero*}","align":"center"},{"title":"Fecha","field":"{*fecha*}","align":"center"},{"title":"Solicitante","field":"{*mostrarUsuarioTicket@dependencia*}","align":"center"},{"title":"Descripcion","field":"{*getDescripcionTicket@id,iddocumento,numero,descripcion*}","align":"left"},{"title":"Clasificaci&oacute;n","field":"{*mostrarClasificacionTicket@id*}","align":"center"},{"title":"Vencimiento","field":"{*vencimientoTicket@fecha,tipo_dias,cant_dias,estado_ticket*}","align":"center"},{"title":"Estado","field":"{*mostrarEstadoTicket@id,estado_ticket*}","align":"center"},{"title":"Cantidad tareas","field":"{*contadorTareaTicket@iddocumento*}","align":"center"},{"title":"Acciones","field":"{*optionsTickets@id,iddocumento*}","align":"center"}]',
             'encabezado_componente' => NULL,
             'campos_adicionales' => 'b.descripcion,b.idft_mesa_ayuda as id,b.clasificacion,b.dependencia,c.tipo_dias,c.cant_dias,b.estado_ticket',
             'tablas_adicionales' => 'ft_mesa_ayuda b join ma_clasificacion c on b.clasificacion=c.idma_clasificacion join ma_clasificacion d on c.cod_padre=d.idma_clasificacion',
@@ -594,7 +564,7 @@ final class Version20200425215229 extends AbstractMigration
             'nombre' => $nombreComponente,
             'orden' => 1,
             'url' => NULL,
-            'info' => '[{"title":"Ticket","field":"{*verDocumentoTicket@iddocumento,numero*}","align":"center"},{"title":"Fecha","field":"{*fecha*}","align":"center"},{"title":"Solicitante","field":"{*mostrarUsuarioTicket@dependencia*}","align":"center"},{"title":"Descripcion","field":"{*descripcion*}","align":"left"},{"title":"Clasificaci&oacute;n","field":"{*mostrarClasificacionTicket@id*}","align":"center"},{"title":"Vencimiento","field":"{*vencimientoTicket@fecha,tipo_dias,cant_dias,estado_ticket*}","align":"center"},{"title":"Estado","field":"{*mostrarEstadoTicket@id,estado_ticket*}","align":"center"},{"title":"Cantidad tareas","field":"{*contadorTareaTicket@iddocumento*}","align":"center"},{"title":"Acciones","field":"{*optionsTickets@id,iddocumento*}","align":"center"}]',
+            'info' => '[{"title":"Ticket","field":"{*verDocumentoTicket@iddocumento,numero*}","align":"center"},{"title":"Fecha","field":"{*fecha*}","align":"center"},{"title":"Solicitante","field":"{*mostrarUsuarioTicket@dependencia*}","align":"center"},{"title":"Descripcion","field":"{*getDescripcionTicket@id,iddocumento,numero,descripcion*}","align":"left"},{"title":"Clasificaci&oacute;n","field":"{*mostrarClasificacionTicket@id*}","align":"center"},{"title":"Vencimiento","field":"{*vencimientoTicket@fecha,tipo_dias,cant_dias,estado_ticket*}","align":"center"},{"title":"Estado","field":"{*mostrarEstadoTicket@id,estado_ticket*}","align":"center"},{"title":"Cantidad tareas","field":"{*contadorTareaTicket@iddocumento*}","align":"center"},{"title":"Acciones","field":"{*optionsTickets@id,iddocumento*}","align":"center"}]',
             'encabezado_componente' => NULL,
             'campos_adicionales' => 'b.descripcion,b.idft_mesa_ayuda as id,b.clasificacion,b.dependencia,c.tipo_dias,c.cant_dias,b.estado_ticket',
             'tablas_adicionales' => 'ft_mesa_ayuda b join ma_clasificacion c on b.clasificacion=c.idma_clasificacion join ma_clasificacion d on c.cod_padre=d.idma_clasificacion',
@@ -632,7 +602,7 @@ final class Version20200425215229 extends AbstractMigration
             'nombre' => $nombreComponente,
             'orden' => 1,
             'url' => NULL,
-            'info' => '[{"title":"Ticket","field":"{*verDocumentoTicket@iddocumento,numero*}","align":"center"},{"title":"Fecha","field":"{*fecha*}","align":"center"},{"title":"Solicitante","field":"{*mostrarUsuarioTicket@dependencia*}","align":"center"},{"title":"Descripcion","field":"{*descripcion*}","align":"left"},{"title":"Clasificaci&oacute;n","field":"{*mostrarClasificacionTicket@id*}","align":"center"},{"title":"Vencimiento","field":"{*vencimientoTicket@fecha,tipo_dias,cant_dias,estado_ticket*}","align":"center"},{"title":"Estado","field":"{*mostrarEstadoTicket@id,estado_ticket*}","align":"center"},{"title":"Cantidad tareas","field":"{*contadorTareaTicket@iddocumento*}","align":"center"},{"title":"Acciones","field":"{*optionsTickets@id,iddocumento*}","align":"center"}]',
+            'info' => '[{"title":"Ticket","field":"{*verDocumentoTicket@iddocumento,numero*}","align":"center"},{"title":"Fecha","field":"{*fecha*}","align":"center"},{"title":"Solicitante","field":"{*mostrarUsuarioTicket@dependencia*}","align":"center"},{"title":"Descripcion","field":"{*getDescripcionTicket@id,iddocumento,numero,descripcion*}","align":"left"},{"title":"Clasificaci&oacute;n","field":"{*mostrarClasificacionTicket@id*}","align":"center"},{"title":"Vencimiento","field":"{*vencimientoTicket@fecha,tipo_dias,cant_dias,estado_ticket*}","align":"center"},{"title":"Estado","field":"{*mostrarEstadoTicket@id,estado_ticket*}","align":"center"},{"title":"Cantidad tareas","field":"{*contadorTareaTicket@iddocumento*}","align":"center"},{"title":"Acciones","field":"{*optionsTickets@id,iddocumento*}","align":"center"}]',
             'encabezado_componente' => NULL,
             'campos_adicionales' => 'b.descripcion,b.idft_mesa_ayuda as id,b.clasificacion,b.dependencia,c.tipo_dias,c.cant_dias,b.estado_ticket',
             'tablas_adicionales' => 'ft_mesa_ayuda b join ma_clasificacion c on b.clasificacion=c.idma_clasificacion join ma_clasificacion d on c.cod_padre=d.idma_clasificacion',

@@ -7,6 +7,7 @@ use Saia\MesaAyuda\formatos\mesa_ayuda\FtMesaAyuda;
 use Saia\controllers\SessionController;
 use Saia\models\vistas\VfuncionarioDc;
 use Saia\controllers\DateController;
+use Saia\models\documento\ComentarioDocumento;
 
 $max_salida = 6;
 $rootPath = $ruta = "";
@@ -80,7 +81,7 @@ function mostrarClasificacionTicket($idFtMesaAyuda){
 	return($cadenaRetorno);
 }
 
-function mostrarEstadoTicket($idFtMesaAyuda,$estado_ticket){
+function mostrarEstadoTicket($idFtMesaAyuda,$estado_ticket=''){
     global $FtMesaAyuda;
     if(!$FtMesaAyuda){
         $FtMesaAyuda = new FtMesaAyuda($idFtMesaAyuda);
@@ -226,5 +227,47 @@ function optionsTickets($idFtMesaAyuda,$iddocumento){
         <div style="display:none" class="capaReclasifica' . $iddocumento . '">
             ' . listarClasificacionesTicket($idFtMesaAyuda,$iddocumento) . '
         </div>';
+}
+
+function getDescripcionTicket($id,$iddocumento,$numero,$descripcion){
+    $comments = ComentarioDocumento::findAllByAttributes([
+        'fk_documento' => $iddocumento
+    ]);
+    $comments = array_reverse($comments);
+    $comentarios = parsearComentarioTicket($comments);
+  
+    $html = '';
+    
+    $html .= '<div class="dropdown dropdown2">';
+    $html .= '<div class="" idticket="' . $id . '" dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">' . $descripcion . '</div>';
+    $html .= "<div class='dropdown-menu border border-dark rounded w-100' id='title_" . $id . "' style='z-index: 1000;'>
+                <div class='container px-3 py-3'>
+                  <div class='border-bottom'>
+                    <div>" . mostrarEstadoTicket($id) . ' <span class="text-muted">Ticket # ' . $numero . "</span>
+                    </div>
+                    <div class='pt-3'>" . $descripcion . "
+                    </div>
+                    <div class='pt-3 text-muted'>Último comentario
+                    </div>
+                  </div>
+                  <div class='pt-3'>
+                  " . $comentarios . "
+                  </div>
+                </div>
+             </div>";
+    $html .= '</div>';
+    $html .= '';
+    
+    return $html;
+}
+
+function parsearComentarioTicket($comments){
+    $html = '';
+    foreach ($comments as $ComentarioDocumento) {      
+        $html .= "<div class='h5'>" . $ComentarioDocumento->Funcionario->getName() . "</div>" . $ComentarioDocumento->comentario . "<span class='float-right hint-text'>" . DateController::convertDate($ComentarioDocumento->fecha) . "</span>";
+        break;
+    }
+    
+    return $html;
 }
 ?>

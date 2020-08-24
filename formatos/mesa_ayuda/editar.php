@@ -22,7 +22,7 @@ use Saia\MesaAyuda\formatos\mesa_ayuda\FtMesaAyuda;
 
 SessionController::goUp($_REQUEST['token'], $_REQUEST['key']);
 
-$Formato = new Formato(54);
+$Formato = new Formato(51);
 $documentId = $_REQUEST['documentId'] ?? 0;
     $FtMesaAyuda = FtMesaAyuda::findByDocumentId($documentId);?><!DOCTYPE html>
 <html>
@@ -72,8 +72,8 @@ $documentId = $_REQUEST['documentId'] ?? 0;
                 $query->expr()->lte('fecha_inicial', ':initialDate'),
                 $query->expr()->gte('fecha_final', ':finalDate')
             )->setParameter(":login", Saia\controllers\SessionController::getLogin())
-            ->setParameter(':initialDate', new DateTime(), \Doctrine\DBAL\Types\Type::getType('datetime'))
-            ->setParameter(':finalDate', new DateTime(), \Doctrine\DBAL\Types\Type::getType('datetime'))
+            ->setParameter(':initialDate', new DateTime(), \Doctrine\DBAL\Types\Types::DATETIME_MUTABLE)
+            ->setParameter(':finalDate', new DateTime(), \Doctrine\DBAL\Types\Types::DATETIME_MUTABLE)
             ->execute()->fetchAll();
     
         $total = count($roles);
@@ -104,61 +104,10 @@ $documentId = $_REQUEST['documentId'] ?? 0;
             throw new Exception("Error al buscar la dependencia", 1);
         }
         ?>
-
-        <div class='form-group form-group-default form-group-default-select2 required' id='group_pre_clasificacion'>
-            <label title=''>CLASIFICACIóN</label>
-            <select class='full-width' name='pre_clasificacion' id='pre_clasificacion' required>
-            <option value=''>Por favor seleccione...</option>
-        <option value='121' data-key='1'>
-                 
-            </option></select>
-                <script>
-                $(document).ready(function() {
-                    $('#pre_clasificacion').select2();
-                });
-                </script>
-        </div>            <script>
-                $(function(){
-                    $.post(
-                        '<?= ABSOLUTE_SAIA_ROUTE ?>app/documento/consulta_seleccionado.php',
-                        {
-                            key: localStorage.getItem('key'),
-                            token: localStorage.getItem('token'),
-                            fieldId: 9496,
-                            documentId: "<?= $documentId ?>"
-                        },
-                        function (response) {
-                            if (response.success) {
-                                if(response.data.selected.length){
-                                    if(response.data.inactive.length){
-                                        var item = response.data.inactive[0];
-                                                              
-                                        $('#pre_clasificacion').append(
-                                            $("<option>", {
-                                                value: item.id,
-                                                text: item.label
-                                            })
-                                        );
-                                    }
-                                    $("[name='pre_clasificacion']")
-                                        .val(response.data.selected)
-                                        .trigger('change');
-                                }
-
-                            } else {
-                                top.notification({
-                                    type: 'error',
-                                    message: response.message
-                                });
-                            }
-                        },
-                        'json'
-                    );
-                });
-            </script>
+<?= $FtMesaAyuda->pre_clasificacion_funcion_add(9847)?>
             <div class="form-group form-group-default required" id="group_descripcion">
                 <label title="">
-                    DESCRIPCIóN
+                    DESCRIPCIÓN
                 </label>
                 <textarea 
                     name="descripcion"
@@ -187,7 +136,7 @@ $documentId = $_REQUEST['documentId'] ?? 0;
 <script data-baseurl="<?= $rootPath ?>">
     $(function () {
         let baseUrl = $('script[data-baseurl]').data('baseurl');
-        let options = {"tipos":".pdf,.doc,.docx,.jpg,.jpeg,.gif,.png,.bmp,.xls,.xlsx,.ppt","longitud":"3","cantidad":"3"};
+        let options = {"tipos":".pdf,.doc,.docx,.jpg,.jpeg,.gif,.png,.bmp,.xls,.xlsx,.ppt","longitud":"3","cantidad":"3","ruta_consulta":"app\\\/anexos\\\/consultar_anexos_campo.php"};
         let loadeddropzone_anexos= [];
 
         $("#dropzone_anexos").addClass('dropzone');
@@ -211,7 +160,7 @@ $documentId = $_REQUEST['documentId'] ?? 0;
                                 $.post(baseUrl + options.ruta_consulta, {
                     token: localStorage.getItem('token'),
                     key: localStorage.getItem('key'),
-                    fieldId: 9492,
+                    fieldId: 9834,
                     documentId: <?= $documentId ?>                }, function (response) {
                     if (response.success) {
                         response.data.forEach(mockFile => {
@@ -268,8 +217,8 @@ $documentId = $_REQUEST['documentId'] ?? 0;
                     $("[name='anexos']").val(
                         loadeddropzone_anexos.join(',')
                     );
-                                        dropzone_anexos.options.maxFiles = options.cantidad - loadeddropzone_anexos.length;
-                                    });
+                    
+                });
 
                 this.on('maxfilesexceeded', function () {
                     $('.dz-error').remove();
@@ -282,24 +231,21 @@ $documentId = $_REQUEST['documentId'] ?? 0;
         });
     });
 </script>
-<input type='hidden' name='estado_ticket' value='<?= Saia\controllers\generator\component\ComponentBuilder::callShowValue(
-                'estado_ticket',
-                $FtMesaAyuda
-            ) ?>'>
 <input type='hidden' name='responsable' value='<?= Saia\controllers\generator\component\ComponentBuilder::callShowValue(
                 'responsable',
+                $FtMesaAyuda
+            ) ?>'>
+<input type='hidden' name='estado_ticket' value='<?= Saia\controllers\generator\component\ComponentBuilder::callShowValue(
+                'estado_ticket',
                 $FtMesaAyuda
             ) ?>'>
 <input type='hidden' name='clasificacion' value='<?= Saia\controllers\generator\component\ComponentBuilder::callShowValue(
                 'clasificacion',
                 $FtMesaAyuda
             ) ?>'>
-<input type='hidden' name='campo_descripcion' value='9493'>
-					<input type='hidden' name='documentId' value='<?= $documentId ?>'>
+<input type='hidden' name='documentId' value='<?= $documentId ?>'>
 					<input type='hidden' id='tipo_radicado' name='tipo_radicado' value='mesa_ayuda'>
-					<input type='hidden' name='formatId' value='54'>
-					<input type='hidden' name='tabla' value='ft_mesa_ayuda'>
-					<input type='hidden' name='formato' value='mesa_ayuda'>
+					<input type='hidden' name='formatId' value='51'>
 					<div class='form-group px-0 pt-3' id='form_buttons'><button class='btn btn-complete' id='save_document' type='button'>Continuar</button><div class='progress-circle-indeterminate d-none' id='spiner'></div></div>                    </form>
                 </div>
             </div>
@@ -326,7 +272,24 @@ $documentId = $_REQUEST['documentId'] ?? 0;
                         if (+'<?= $documentId ?>') {
                             edit(<?= $params ?>)
                         } else {
-                            add(<?= $params ?>)
+                            add(<?= $params ?>);
+                            if (window.routeParams.padre){
+                                $.post(
+                                `${baseUrl}app/formato/consulta_ft_padre.php`,
+                                {
+                                    key: localStorage.getItem('key'),
+                                    token: localStorage.getItem('token'),
+                                    padre : window.routeParams.padre
+                                },
+                                function (response){
+                                    let data = response.data;
+                                    if(response.success){
+                                        $(`input[name="${data.parentFormatTable}"]`).val(data.parentFtId);
+                                    }
+                                },
+                                'json'
+                            );
+                            }
                         }
                     });
 
@@ -371,7 +334,7 @@ $documentId = $_REQUEST['documentId'] ?? 0;
                     function executeEvents(callback) {
                         let documentId = $("[name='documentId']").val();
 
-                        (+documentId ? beforeSendEdit() : beforeSendAdd())
+                        (+documentId ? beforeSendEdit(<?= $params ?>) : beforeSendAdd(<?= $params ?>))
                         .then(r => {
                             sendData()
                                 .then(requestResponse => {
