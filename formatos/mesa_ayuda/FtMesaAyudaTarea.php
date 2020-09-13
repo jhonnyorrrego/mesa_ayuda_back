@@ -5,6 +5,7 @@ namespace Saia\MesaAyuda\formatos\mesa_ayuda;
 use Saia\core\model\Model;
 use Saia\models\documento\Documento;
 use Saia\models\tarea\Tarea;
+use Saia\models\tarea\Tarea;
 use Saia\MesaAyuda\formatos\mesa_ayuda\UtilitiesFtMesaAyuda;
 use Saia\models\tarea\IExternalEventsTask;
 use Saia\MesaAyuda\formatos\mesa_ayuda\FtMesaAyuda;
@@ -22,13 +23,15 @@ class FtMesaAyudaTarea implements IExternalEventsTask
   
   public function afterCreateTarea(): bool
   {
+    $responsables = $this->Tarea->getService()->getManagers();
+    exception($responsables);
     return true;
   }
   public function afterUpdateTarea(): bool
   {
     if (!$this->Tarea->estado) {
-        if ($DocumentoTarea = $this->Tarea->getDocument()) {
-            $this->actualizarEstadoTareaTicket($DocumentoTarea->Documento);
+        if ($DocumentoTarea = $this->Tarea->getService()->getDocument()) {
+            $this->actualizarEstadoTareaTicket($DocumentoTarea);
         }
     }
     
@@ -36,8 +39,8 @@ class FtMesaAyudaTarea implements IExternalEventsTask
   }
   public function afterDeleteTarea(): bool
   {
-    if ($DocumentoTarea = $this->Tarea->getDocument()) {
-        $this->actualizarEstadoTareaTicket($DocumentoTarea->Documento);
+    if ($DocumentoTarea = $this->Tarea->getService()->getDocument()) {
+        $this->actualizarEstadoTareaTicket($DocumentoTarea);
     }
     
     return true;
@@ -52,8 +55,8 @@ class FtMesaAyudaTarea implements IExternalEventsTask
   }
   public function afterCreateTareaEstado(): bool
   {    
-    if ($DocumentoTarea = $this -> Tarea -> getDocument()) {
-        $this -> actualizarEstadoTareaTicket($DocumentoTarea->Documento);
+    if ($DocumentoTarea = $this -> Tarea -> getService()-> getDocument()) {
+        $this -> actualizarEstadoTareaTicket($DocumentoTarea);
     }
     
     return true;
@@ -103,5 +106,10 @@ class FtMesaAyudaTarea implements IExternalEventsTask
       }
       
       return true;
+  }
+  
+  public function actualizarResponsableTicket()
+  {
+    
   }
 }

@@ -3,8 +3,9 @@ $max_salida = 10;
 $rootPath = $ruta = "";
 
 while ($max_salida > 0) {
-    if (is_file($ruta . "sw.js")) {
+    if (is_file($ruta . "index.php")) {
         $rootPath = $ruta;
+        break;
     }
 
     $ruta .= "../";
@@ -51,7 +52,7 @@ $documentId = $_REQUEST['documentId'] ?? 0;
 
         <?php
         $selected = $FtMesaAyuda->dependencia ?? '';
-        $query = Saia\core\DatabaseConnection::getQueryBuilder();
+        $query = Saia\core\DatabaseConnection::getDefaultConnection()->createQueryBuilder();
         $roles = $query
             ->select("dependencia as nombre, iddependencia_cargo, cargo")
             ->from("vfuncionario_dc")

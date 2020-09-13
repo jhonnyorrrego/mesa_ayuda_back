@@ -104,13 +104,13 @@ class UtilitiesFtMesaAyuda
     {
         $finish = $total = 0;
 
-        if ($Tareas = $Documento->getTasks()) {
+        if ($Tareas = $Documento->getService()->getTasks()) {
             $total = count($Tareas);
 
             foreach ($Tareas as $Tarea) {
                 if (
-                    $Tarea->getState() == TareaEstado::REALIZADA ||
-                    $Tarea->getState() == TareaEstado::CANCELADA
+                    $Tarea->getService()->getState()->valor == TareaEstado::REALIZADA ||
+                    $Tarea->getService()->getState()->valor == TareaEstado::CANCELADA
                 ) {
                     $finish = $finish + 1;
                 }
