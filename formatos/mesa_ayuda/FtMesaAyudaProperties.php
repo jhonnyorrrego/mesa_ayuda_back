@@ -26,6 +26,7 @@ class FtMesaAyudaProperties extends ModelFormat
 				'estado_ticket',
 				'firma',
 				'idft_mesa_ayuda',
+				'medio',
 				'pre_clasificacion',
 				'pre_clasificacion_json',
 				'responsable' 

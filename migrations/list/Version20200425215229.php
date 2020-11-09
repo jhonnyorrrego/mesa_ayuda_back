@@ -100,7 +100,7 @@ final class Version20200425215229 extends AbstractMigration
             'nombre' => "reporte_tickets_pendientes",
             'tipo' => '2',
             'imagen' => 'fa fa-bar-chart-o',
-            'etiqueta' => 'Tickets pendientes',
+            'etiqueta' => 'Mis tickets',
             'enlace' => 'views/dashboard/kaiten_dashboard.php?panels=[{"kConnector": "iframe","url": "views/buzones/grilla.php?idbusqueda_componente=' . $componente[0]["idbusqueda_componente"] . '","kTitle":"' . $componente[0]["etiqueta"] . '"}]',
             'cod_padre' => $idReporteTickets,
             'orden' => 1,
@@ -108,6 +108,29 @@ final class Version20200425215229 extends AbstractMigration
         ];
         
         $id = $this->createModulo($data, "reporte_tickets_pendientes");
+        //Fin reporte_tickets_pendientes -----------------------
+        
+        //Creando modulo todos_tickets -----------------
+        $sql = "SELECT idbusqueda_componente,etiqueta FROM busqueda_componente WHERE nombre='todos_tickets' order by idbusqueda_componente desc";
+        $componente = $this->connection->executeQuery($sql)->fetchAll();
+
+        if (!$componente[0]['idbusqueda_componente']) {
+            $this->abortIf(true, "El componente todos_tickets NO existe");
+        }
+        
+        $data = [
+            'pertenece_nucleo' => '0',
+            'nombre' => "reporte_todos_tickets",
+            'tipo' => '2',
+            'imagen' => 'fa fa-bar-chart-o',
+            'etiqueta' => 'Todos los tickets',
+            'enlace' => 'views/dashboard/kaiten_dashboard.php?panels=[{"kConnector": "iframe","url": "views/buzones/grilla.php?idbusqueda_componente=' . $componente[0]["idbusqueda_componente"] . '","kTitle":"' . $componente[0]["etiqueta"] . '"}]',
+            'cod_padre' => $idReporteTickets,
+            'orden' => 2,
+            'color' => ''
+        ];
+        
+        $id = $this->createModulo($data, "todos_tickets");
         //Fin reporte_tickets_pendientes -----------------------
         
         //Creando modulo reporte_tickets_clasificados -----------------
@@ -333,7 +356,7 @@ final class Version20200425215229 extends AbstractMigration
                 'predeterminado' => NULL,
                 'banderas' => 'a',
                 'etiqueta_html' => 'Attached',
-                'orden' => 4,
+                'orden' => 5,
                 'fila_visible' => 1,
                 'placeholder' => NULL,
                 'longitud_vis' => NULL,
@@ -353,7 +376,7 @@ final class Version20200425215229 extends AbstractMigration
                 'predeterminado' => NULL,
                 'banderas' => '',
                 'etiqueta_html' => 'Textarea',
-                'orden' => 3,
+                'orden' => 4,
                 'fila_visible' => 1,
                 'placeholder' => 'campo texto con formato',
                 'longitud_vis' => NULL,
@@ -373,7 +396,7 @@ final class Version20200425215229 extends AbstractMigration
                 'predeterminado' => NULL,
                 'banderas' => '',
                 'etiqueta_html' => 'Hidden',
-                'orden' => 5,
+                'orden' => 6,
                 'fila_visible' => 1,
                 'placeholder' => '',
                 'longitud_vis' => NULL,
@@ -393,7 +416,7 @@ final class Version20200425215229 extends AbstractMigration
                 'predeterminado' => 1,
                 'banderas' => '',
                 'etiqueta_html' => 'Hidden',
-                'orden' => 5,
+                'orden' => 7,
                 'fila_visible' => 1,
                 'placeholder' => 'Campo hidden',
                 'longitud_vis' => NULL,
@@ -413,7 +436,7 @@ final class Version20200425215229 extends AbstractMigration
                 'predeterminado' => NULL,
                 'banderas' => '',
                 'etiqueta_html' => 'Hidden',
-                'orden' => 6,
+                'orden' => 8,
                 'fila_visible' => 1,
                 'placeholder' => 'Campo hidden',
                 'longitud_vis' => NULL,
@@ -433,7 +456,7 @@ final class Version20200425215229 extends AbstractMigration
                 'predeterminado' => NULL,
                 'banderas' => '',
                 'etiqueta_html' => 'Method',
-                'orden' => 2,
+                'orden' => 3,
                 'fila_visible' => 1,
                 'placeholder' => '',
                 'longitud_vis' => NULL,
@@ -479,6 +502,26 @@ final class Version20200425215229 extends AbstractMigration
                 'longitud_vis' => NULL,
                 'opciones' => '',
                 'listable' => '0'
+            ],
+            'medio' => [
+                'formato_idformato' => $idFormato,
+                'nombre' => 'medio',
+                'etiqueta' => 'Medio',
+                'tipo_dato' => 'string',
+                'longitud' => '255',
+                'obligatoriedad' => '1',
+                'valor' => '1,1;2,2;3,3;4,4',
+                'acciones' => 'a,e',
+                'ayuda' => NULL,
+                'predeterminado' => NULL,
+                'banderas' => '',
+                'etiqueta_html' => 'Radio',
+                'orden' => '2',
+                'fila_visible' => 1,
+                'placeholder' => 'Campo texto',
+                'longitud_vis' => NULL,
+                'opciones' => '',
+                'listable' => '1'
             ]
         ];
         
@@ -487,6 +530,9 @@ final class Version20200425215229 extends AbstractMigration
             
             if($field["nombre"] == 'pre_clasificacion' && $idCampoFormato){
               $idCampoClasificacion = $this->connection->lastInsertId();
+            }
+            if($field["nombre"] == 'medio' && $idCampoFormato){
+              $idCampoMedio = $this->connection->lastInsertId();
             }
         }
         
@@ -498,6 +544,36 @@ final class Version20200425215229 extends AbstractMigration
         ];
         
         $this->connection->insert('campo_opciones', $data);
+        
+        $data = [
+            'llave' => "1",
+            'valor' => 'Saia',
+            'fk_campos_formato' => $idCampoMedio,
+            'estado' => '1'
+        ],[
+            'llave' => "2",
+            'valor' => 'Correo',
+            'fk_campos_formato' => $idCampoMedio,
+            'estado' => '1'
+        ],[
+            'llave' => "3",
+            'valor' => 'Chat',
+            'fk_campos_formato' => $idCampoMedio,
+            'estado' => '1'
+        ],[
+            'llave' => "4",
+            'valor' => 'Telefono',
+            'fk_campos_formato' => $idCampoMedio,
+            'estado' => '1'
+        ],[
+            'llave' => "5",
+            'valor' => 'Pagina Web',
+            'fk_campos_formato' => $idCampoMedio,
+            'estado' => '1'
+        ];
+        foreach ($data as $field) {
+            $this->connection->insert('campo_opciones', $field);
+        }
     }
 
     public function createBusquedas()
@@ -631,6 +707,43 @@ final class Version20200425215229 extends AbstractMigration
         $this->createBusquedaCondicion($idbusquedaComponente, $busquedaCondicion, $nombreComponente);
         //Fin tickets_terminado-----------------------------------------------------
         
+        //Creando el componente todos_tickets------------------------------------
+        $nombreComponente = 'todos_tickets';
+        $busquedaComponente = [
+            'busqueda_idbusqueda' => $idbusqueda,
+            'etiqueta' => 'Todos los tickets',
+            'nombre' => $nombreComponente,
+            'orden' => 1,
+            'url' => NULL,
+            'info' => '[{"title":"Ticket","field":"{*verDocumentoTicket@iddocumento,numero*}","align":"center"},{"title":"Fecha","field":"{*fecha*}","align":"center"},{"title":"Solicitante","field":"{*mostrarUsuarioTicket@dependencia*}","align":"center"},{"title":"Descripcion","field":"{*getDescripcionTicket@id,iddocumento,numero,descripcion*}","align":"left"},{"title":"Clasificaci&oacute;n","field":"{*mostrarClasificacionTicket@id*}","align":"center"},{"title":"Vencimiento","field":"{*vencimientoTicket@fecha,tipo_dias,cant_dias,estado_ticket*}","align":"center"},{"title":"Estado","field":"{*mostrarEstadoTicket@id,estado_ticket*}","align":"center"},{"title":"Cantidad tareas","field":"{*contadorTareaTicket@iddocumento*}","align":"center"},{"title":"Acciones","field":"{*optionsTickets@id,iddocumento*}","align":"center"}]',
+            'encabezado_componente' => NULL,
+            'campos_adicionales' => 'b.descripcion,b.idft_mesa_ayuda as id,b.clasificacion,b.dependencia,c.tipo_dias,c.cant_dias,b.estado_ticket',
+            'tablas_adicionales' => 'ft_mesa_ayuda b join ma_clasificacion c on b.clasificacion=c.idma_clasificacion join ma_clasificacion d on c.cod_padre=d.idma_clasificacion',
+            'ordenado_por' => 'a.fecha',
+            'direccion' => 'desc',
+            'agrupado_por' => NULL,
+            'busqueda_avanzada' => 'views/modules/mesa_ayuda/views/reportes/busqueda_avanzada.php',
+            'acciones_seleccionados' => '',
+            'enlace_adicionar' => NULL,
+            'llave' => 'a.iddocumento'
+        ];
+        $idbusquedaComponente = $this->createBusquedaComponente($idbusqueda, $busquedaComponente, $nombreComponente);
+        
+        $this->connection->update('busqueda_componente', [
+            'url' => 'views/buzones/grilla.php?idbusqueda_componente=' . $idbusquedaComponente
+        ], [
+            'idbusqueda_componente' => $idbusquedaComponente
+        ]);
+        
+        //Se crea la condicion para el componente todos tickets
+        $busquedaCondicion = [
+            'fk_busqueda_componente' => $idbusquedaComponente,
+            'codigo_where' => "a.iddocumento=b.documento_iddocumento",
+            'etiqueta_condicion' => $nombreComponente
+        ];
+        $this->createBusquedaCondicion($idbusquedaComponente, $busquedaCondicion, $nombreComponente);
+        //Fin todos_tickets-----------------------------------------------------
+        
         
         //Se crea la busqueda tickets
         $busqueda = [
@@ -717,6 +830,7 @@ final class Version20200425215229 extends AbstractMigration
         ];
         $this->createBusquedaCondicion($idbusquedaComponente, $busquedaCondicion, $nombreComponente);
         //Fin tickets_tarea_terminada-----------------------------------------------------
+        
     }
     
     public function createConfig($schema)
@@ -774,6 +888,7 @@ final class Version20200425215229 extends AbstractMigration
         $this -> deleteModulo('reporte_tickets_tarea');
         $this -> deleteModulo('reporte_tickets_proceso');
         $this -> deleteModulo('reporte_tickets_terminado');
+        $this -> deleteModulo('todos_tickets');
         
         $sql = "SELECT c.idcampo_opciones FROM formato a, campos_formato b, campo_opciones c WHERE a.nombre='{$name}' and a.idformato=b.formato_idformato and b.idcampos_formato=c.fk_campos_formato";
         $campoOpciones = $this->connection->executeQuery($sql)->fetchAll();

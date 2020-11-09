@@ -1,6 +1,4 @@
 <?php
-
-
 use Saia\MesaAyuda\formatos\mesa_ayuda\FtMesaAyuda;
 use Saia\core\DatabaseConnection;
 use Saia\controllers\JwtController;
@@ -10,7 +8,7 @@ $max_salida = 10;
 $rootPath = $ruta = '';
 
 while ($max_salida > 0) {
-    if (is_file($ruta . 'sw.js')) {
+    if (is_file($ruta . 'index.php')) {
         $rootPath = $ruta;
         break;
     }

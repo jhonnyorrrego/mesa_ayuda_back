@@ -13,6 +13,7 @@ function edit(data){
 function show(data){
     let baseUrl = window.getBaseUrl();
     eventoGuardarComentario();
+    cambiarEstadoPendiente();
 }
 
 //evento ejecutado anterior al adicionar
@@ -163,7 +164,7 @@ function eventoGuardarComentario(){
     });
 }
 
-function envioGuardarComentario(){		
+function envioGuardarComentario(){
 		var Comentario = new Object();
 		Comentario.comment = $("#descripcion").val();
 		if(!Comentario.comment){
@@ -210,4 +211,74 @@ function envioGuardarComentario(){
     });
 
     return data;
+}
+function cambiarEstadoPendiente(){
+		$(document).on('click','.cambiar_estado',function(){
+      var id = $(this).attr("idft_mesa_ayuda");
+      
+      var confirmacionCambioEstado = top.confirm({
+	          id: 'question',
+	          type: 'success',
+	          title: 'Guardando!',
+	          message: 'Esta seguro de cambiar el estado del ticket?',
+	          position: 'center',
+	          timeout: 0,
+	          buttons: [
+	              [
+	                  '<button><b>Si</b></button>',
+	                  function (instance, toast) {
+	                  		
+	                  		accionEstadoPendiente(id);
+	                  		
+	                      instance.hide(
+	                          {transitionOut: 'fadeOut'},
+	                          toast,
+	                          'button'
+	                      );
+	                  },
+	                  true
+	              ],
+	              [
+	                  '<button>NO</button>',
+	                  function (instance, toast) {
+	                      instance.hide(
+	                          {transitionOut: 'fadeOut'},
+	                          toast,
+	                          'button'
+	                      );
+	                  }
+	              ]
+	          ]
+	      });
+    });
+}
+function accionEstadoPendiente(id){
+		
+	
+		$.post(
+      '../../app/modules/back_mesa_ayuda/formatos/mesa_ayuda/actualizarEstado.php',
+      {
+          token: localStorage.getItem('token'),
+          key: localStorage.getItem('key'),
+          idft_mesa_ayuda: id
+      },
+      function(response) {
+          if (response.success) {
+          		$("#terminado" + id).before(response.data);
+          		$("#terminado" + id).hide();
+          	
+              top.notification({
+                  type: "success",
+                  message: response.message
+              });
+              top.closeTopModal();
+          } else {
+              /*top.notification({
+                  type: "error",
+                  message: response.message
+              });*/
+          }
+      },
+      "json"
+  );
 }

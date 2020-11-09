@@ -5,7 +5,6 @@ namespace Saia\MesaAyuda\formatos\mesa_ayuda;
 use Saia\core\model\Model;
 use Saia\models\documento\Documento;
 use Saia\models\tarea\Tarea;
-use Saia\models\tarea\Tarea;
 use Saia\MesaAyuda\formatos\mesa_ayuda\UtilitiesFtMesaAyuda;
 use Saia\models\tarea\IExternalEventsTask;
 use Saia\MesaAyuda\formatos\mesa_ayuda\FtMesaAyuda;
@@ -23,8 +22,8 @@ class FtMesaAyudaTarea implements IExternalEventsTask
   
   public function afterCreateTarea(): bool
   {
-    $responsables = $this->Tarea->getService()->getManagers();
-    exception($responsables);
+    //$responsables = $this->Tarea->getService()->getManagers();
+    
     return true;
   }
   public function afterUpdateTarea(): bool

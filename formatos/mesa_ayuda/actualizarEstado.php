@@ -20,7 +20,6 @@ while ($max_salida > 0) {
 }
 
 include_once $rootPath . 'app/vendor/autoload.php';
-include_once $rootPath . 'app/modules/back_mesa_ayuda/reportes/librerias.php';
 
 $Response = (object) [
     'data' => new stdClass(),
@@ -36,17 +35,16 @@ try {
     }
     
     $FtMesaAyuda = new FtMesaAyuda($_REQUEST['idft_mesa_ayuda']);
-    $FtMesaAyuda -> clasificacion = $_REQUEST['clasificacion'];
+    $FtMesaAyuda -> estado_ticket = FtMesaAyuda::ESTADO_PENDIENTE;
 
     if ($FtMesaAyuda->save()) {
-        $Response->message = 'Clasificación asignada correctamente';
         $Response->notifications = NotifierController::prepare();
-        $Response->success = 1;
+        
+        $Response->data = $FtMesaAyuda -> getEstadoTicket();
     }
     ////////////////////// Cambia el estado a finalizado si se encuentra en ENTREGA o lo devuelve a por distribuir si se encontraba en recogida
 
-    
-    $Response->message = "El trámite se ha finalizado correctamente!";
+    $Response->message = 'Estado asignado correctamente';
     $Response->success = 1;
 } catch (Throwable $th) {
     $Response->message = $th->getMessage();

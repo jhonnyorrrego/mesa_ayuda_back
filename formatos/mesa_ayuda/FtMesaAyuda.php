@@ -21,7 +21,7 @@ class FtMesaAyuda extends FtMesaAyudaProperties
         parent::__construct($id);
     }
     
-    public function getEstadoTicket(){
+    public function getEstadoTicket($reporte = 0){
         $cadenaRetorno = '';
               
         $estadoAlmacenado = $this -> estado_ticket;
@@ -31,8 +31,15 @@ class FtMesaAyuda extends FtMesaAyudaProperties
         
         if($estadoAlmacenado == self::ESTADO_PENDIENTE){
             $cadenaRetorno = '<div class="badge badge-danger" style="">' . $this -> estados [$estadoAlmacenado] . '</div>';
-        } else {
+        } else if($estadoAlmacenado == self::ESTADO_TERMINADO && !$reporte){
+            $cadenaRetorno = '<div id="terminado' . $this -> idft_mesa_ayuda . '" class="badge badge-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="cursor:pointer">' . $this -> estados [$estadoAlmacenado] . '</div>
+            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+              <a class="dropdown-item cambiar_estado" href="#" idft_mesa_ayuda="' . $this -> idft_mesa_ayuda . '">' . $this -> estados [self::ESTADO_PENDIENTE] . '</a>
+            </div>';
+        } else if($estadoAlmacenado == self::ESTADO_TERMINADO){
             $cadenaRetorno = '<div class="badge badge-success" style="">' . $this -> estados [$estadoAlmacenado] . '</div>';
+        } else if($estadoAlmacenado == self::ESTADO_PROCESO){
+            $cadenaRetorno = '<div class="badge badge-warning" style="">' . $this -> estados [$estadoAlmacenado] . '</div>';
         }
         
         return($cadenaRetorno);
@@ -139,7 +146,7 @@ class FtMesaAyuda extends FtMesaAyudaProperties
         $html .= "<div class='col-11'>";
         $html .= "<div class='h3'>" . $descripcion . "</div>";
         $html .= "<div class='h5 pull-right'>Ticket # " . $radicado . "</div>";
-        $html .= "<div class='pull-left'>" . $fecha . " - " . $creador . " - " . $this -> getEstadoTicket() . " - Clasificado en: " . $this -> getClasificacion() . " - Anexos: " . $anexos . "</div>";
+        $html .= "<div class='pull-left'>" . $fecha . " - " . $creador . " - " . $this -> getEstadoTicket() . " - Clasificado en: " . $this -> getClasificacion() . " - Anexos: " . $anexos . " - Medio: " . $this->medio . "</div>";
         $html .= "</div>";
         $html .= "</div>";
         

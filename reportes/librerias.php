@@ -87,7 +87,7 @@ function mostrarEstadoTicket($idFtMesaAyuda,$estado_ticket=''){
     if(!$FtMesaAyuda){
         $FtMesaAyuda = new FtMesaAyuda($idFtMesaAyuda);
     }
-    $cadenaRetorno = $FtMesaAyuda -> getEstadoTicket();
+    $cadenaRetorno = $FtMesaAyuda -> getEstadoTicket(1);
     
     return($cadenaRetorno);
 }
@@ -146,6 +146,7 @@ function contadorTareaTicket($iddocumento){
     ->select('count(*) as cantidad')
     ->from('documento_tarea','a')
     ->where('a.fk_documento = :iddocumento')
+    ->andWhere('a.estado=1')
     ->setParameter(':iddocumento',$iddocumento, Type::getType('integer'))
     ->execute()->fetchAll();
   
@@ -182,6 +183,9 @@ function vencimientoTicket($fecha,$tipo_dias,$cant_dias,$estado_ticket){
     $fechaFinalObject = DateController::addBusinessDays($fechaObject,$cant_dias);
     $fechaFinal = $fechaFinalObject->format('Y-m-d');
     //$fechaFinalObject = new DateTime($fechaFinal);
+  } else {
+    $cadenaRetorno = "<span class='badge badge-danger'>Sin definir</span>";
+    return($cadenaRetorno);
   }
   
   $interval = $hoy->diff($fechaFinalObject);//Resultado de dias al restar la fecha de hoy con la fecha final del ticket (Objeto)

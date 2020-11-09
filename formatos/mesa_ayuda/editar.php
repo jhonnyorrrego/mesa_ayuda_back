@@ -105,6 +105,110 @@ $documentId = $_REQUEST['documentId'] ?? 0;
             throw new Exception("Error al buscar la dependencia", 1);
         }
         ?>
+
+        <div class='form-group form-group-default required' id='group_medio'>
+            <label title=''>MEDIO</label>
+            <div class='radio radio-success input-group'>
+        <input 
+                required
+                type='radio'
+                name='medio'
+                id='medio0'
+                value='261' 
+                data-key='261' 
+                aria-required='true'>
+                <label for='medio0' class='mr-3 label-without-focus'>
+                    Saia
+                </label><input 
+                required
+                type='radio'
+                name='medio'
+                id='medio1'
+                value='262' 
+                data-key='262' 
+                aria-required='true'>
+                <label for='medio1' class='mr-3 label-without-focus'>
+                    Correo
+                </label><input 
+                required
+                type='radio'
+                name='medio'
+                id='medio2'
+                value='263' 
+                data-key='263' 
+                aria-required='true'>
+                <label for='medio2' class='mr-3 label-without-focus'>
+                    Chat
+                </label><input 
+                required
+                type='radio'
+                name='medio'
+                id='medio3'
+                value='264' 
+                data-key='264' 
+                aria-required='true'>
+                <label for='medio3' class='mr-3 label-without-focus'>
+                    Telefono
+                </label><input 
+                required
+                type='radio'
+                name='medio'
+                id='medio4'
+                value='265' 
+                data-key='265' 
+                aria-required='true'>
+                <label for='medio4' class='mr-3 label-without-focus'>
+                    Pagina Web
+                </label></div>
+            <label id='medio-error' class='error' for='medio' style='display: none;'></label>
+        </div>            <script>
+                $(function(){
+                    $.post(
+                        '<?= ABSOLUTE_SAIA_ROUTE ?>app/documento/consulta_seleccionado.php',
+                        {
+                            key: localStorage.getItem('key'),
+                            token: localStorage.getItem('token'),
+                            fieldId: 9858,
+                            documentId: "<?= $documentId ?>"
+                        },
+                        function (response) {
+                            if (response.success) {
+                                if(response.data.selected.length){
+                                    if(response.data.inactive.length){
+                                        var node = $("[name='medio']").parent();
+                                        var inactive = response.data.inactive[0];
+                                        var key = $("[name='medio']").length;
+
+                                        node.append(
+                                            $("<input>", {
+                                                type : 'radio',
+                                                name : 'medio',
+                                                id : "medio"+key,
+                                                value: inactive.id,
+                                                "aria-required": 'true'
+                                            }),
+                                            $("<label>", {
+                                                for: "medio"+key,
+                                                class: "mr-3 label-without-focus",
+                                                text: inactive.label
+                                            })
+                                        );
+                                    }
+                                    $("[name='medio'][value='"+response.data.selected+"']")
+                                        .prop('checked', true)
+                                        .trigger('change');
+                                }
+                            } else {
+                                top.notification({
+                                    type: 'error',
+                                    message: response.message
+                                });
+                            }
+                        },
+                        'json'
+                    );
+                });
+            </script>
 <?= $FtMesaAyuda->pre_clasificacion_funcion_add(9847)?>
             <div class="form-group form-group-default required" id="group_descripcion">
                 <label title="">
@@ -218,8 +322,8 @@ $documentId = $_REQUEST['documentId'] ?? 0;
                     $("[name='anexos']").val(
                         loadeddropzone_anexos.join(',')
                     );
-                    
-                });
+                                        dropzone_anexos.options.maxFiles = options.cantidad - loadeddropzone_anexos.length;
+                                    });
 
                 this.on('maxfilesexceeded', function () {
                     $('.dz-error').remove();
@@ -264,10 +368,15 @@ $documentId = $_REQUEST['documentId'] ?? 0;
             $additionalParameters,
             ['baseUrl' => ABSOLUTE_SAIA_ROUTE]
         ));
+        
+        $isFormatRad = 0;
     ?>            <script>
                 $(function() {
                     let baseUrl = 'https://modulos.netsaia.com/saia_ma/saia_2019/';
                     let file = 'app/modules/back_mesa_ayuda/formatos/mesa_ayuda/funciones.js';
+                    let isFormatRad = <?= $isFormatRad ?>;
+                    let params = <?= $params ?>;
+
                     $.getScript(baseUrl + file, () => {
                         window.routeParams = <?= $params ?>;
                         if (+'<?= $documentId ?>') {
@@ -307,11 +416,34 @@ $documentId = $_REQUEST['documentId'] ?? 0;
                             top.successModalEvent(data);
                         })
                     });
-
                     $("#save_document").click(function() {
                         checkForm((data) => {
                             let route = baseUrl + "views/documento/index_acordeon.php?";
                             route += $.param(data);
+
+                            if (isFormatRad) {
+                                let documentId = data.documentId;
+                                let digitalizacion = $('input[name="digitalizacion"]:checked').val();
+                                let orientacionSello = $('input[name="colilla"]:checked').data('key') || 0;
+
+                                let dataUrl = {
+                                    target: 'self',
+                                    colilla_vertical: orientacionSello,
+                                    documentId: documentId
+                                };
+
+                                let rutaOrientacion = +orientacionSello ?
+                                    'views/colilla/colillaVertical.php?' :
+                                    'views/colilla/colillaHorizontal.php?';
+
+                                if (+digitalizacion) {
+                                    dataUrl.enlace = `views/documento/digitalizar_paginas.php?documentId=${documentId}&librerias=1`;
+                                }
+
+                                let paramsUrl = $.param(dataUrl);
+                                route = baseUrl + rutaOrientacion + paramsUrl;
+                            }
+
                             window.location.href = route;
                         })
                     });
@@ -382,6 +514,47 @@ $documentId = $_REQUEST['documentId'] ?? 0;
                             message: message,
                             type: 'error',
                             title: 'Error!'
+                        });
+                    }
+
+                    if (isFormatRad) {
+                        if (typeof params.fk_rcmail_data != 'undefined') {
+                            $.ajax({
+                                url: `${baseUrl}app/modules/back_roundcube/app/request.php`,
+                                type: 'POST',
+                                dataType: 'json',
+                                data: {
+                                    token: localStorage.getItem('token'),
+                                    key: localStorage.getItem('key'),
+                                    method: 'getInfoRcmail',
+                                    data: {
+                                        id: params.fk_rcmail_data
+                                    }
+                                },
+                                success: function (response) {
+                                    $("#descripcion").val(response.asunto);
+                                    loadAnexos(response.anexos_digitales);
+
+                                }
+                            });
+                        }
+                    }
+
+                    function loadAnexos(anexos) {
+                        let baseUrl = localStorage.getItem('baseUrl');
+
+                        var myDropzone = Dropzone.forElement("#dropzone_anexos_digitales");
+                        anexos.forEach(mockFile => {
+                            var thumbnail = mockFile.thumbnail || mockFile.route;
+                            var stringify = JSON.stringify({
+                                success: 1,
+                                data: [mockFile.route]
+                            });
+                            myDropzone.removeAllFiles();
+                            myDropzone.emit('addedfile', mockFile);
+                            myDropzone.emit('thumbnail', mockFile, baseUrl + thumbnail);
+                            myDropzone.emit('complete', mockFile);
+                            myDropzone.emit('success', mockFile, stringify);
                         });
                     }
                 });

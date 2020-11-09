@@ -64,7 +64,6 @@ try {
             <div id="pag_content-0" class="page_content">
                 <div id="page_overflow">
                     <p><?= $FtMesaAyuda->mostrarInfoTicket() ?></p>
-
                 </div>
             </div>
             <div class="page_margin_bottom" id="doc_footer">
